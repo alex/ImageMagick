@@ -1,0 +1,15 @@
+[package]
+name = "imagemagick-rust"
+version = "0.1.0"
+authors = ["ImageMagick DEvelopers <???>"]
+edition = "2018"
+publish = false
+
+[dependencies]
+
+[lib]
+name = "imagemagick_rust"
+crate-type = ["staticlib"]
+
+[profile.release]
+lto = true

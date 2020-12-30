@@ -17,6 +17,28 @@
 #  Top-Level Makefile for building ImageMagick.
 #
 
+RUST_SOURCES = \
+	rust/Cargo.toml \
+	rust/src/lib.rs
+
+if RUST_DEBUG_RELEASE
+CARGO_RELEASE_ARGS=
+else
+CARGO_RELEASE_ARGS=--release
+endif
+
+CARGO_VERBOSE = $(cargo_verbose_$(V))
+cargo_verbose_ = $(cargo_verbose_$(AM_DEFAULT_VERBOSITY))
+cargo_verbose_0 =
+cargo_verbose_1 = --verbose
+
+RUST_LIB=@abs_top_builddir@/rust/target/@RUST_TARGET_SUBDIR@/libimagemagick_rust.a
+
+@abs_top_builddir@/rust/target/@RUST_TARGET_SUBDIR@/libimagemagick_rust.a: $(RUST_SOURCES)
+	cd $(top_srcdir)/rust && \
+	CARGO_TARGET_DIR=@abs_top_builddir@/rust/target cargo build $(CARGO_VERBOSE) $(CARGO_RELEASE_ARGS)
+
+
 topincludedir = @includedir@/MagickCore
 
 AM_CPPFLAGS = -I$(top_builddir) -I$(top_srcdir)
@@ -120,7 +142,8 @@ EXTRA_DIST = \
   $(MAGICKWAND_EXTRA_DIST) \
   $(MAGICKPP_EXTRA_DIST) \
   $(UTILITIES_EXTRA_DIST) \
-  $(TESTS_EXTRA_DIST)
+  $(TESTS_EXTRA_DIST) \
+  $(RUST_SOURCES)
 
 lib_LTLIBRARIES = $(MAGICKCORE_LIBS) $(MAGICKWAND_LIBS) $(MAGICKPP_LIBS)
 AM_LDFLAGS =

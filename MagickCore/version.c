@@ -602,6 +602,8 @@ MagickExport const char *GetMagickVersion(size_t *version)
   return(MagickVersion);
 }
 
+
+void hello_rust(const char *, size_t);
 /*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %                                                                             %
@@ -656,4 +658,5 @@ MagickExport void ListMagickVersion(FILE *file)
       (void) FormatLocaleFile(file,"sizeof(MagickOffsetType)=%g",(double)
         sizeof(MagickOffsetType));
     }
+  hello_rust("ListMagickVersion", strlen("ListMagickVersion"));
 }
