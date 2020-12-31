@@ -19,6 +19,7 @@
 
 RUST_SOURCES = \
 	rust/Cargo.toml \
+	rust/build.rs \
 	rust/src/lib.rs
 
 if RUST_DEBUG_RELEASE

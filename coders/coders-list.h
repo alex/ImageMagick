@@ -192,3 +192,7 @@ AddMagickCoder(XTRN)
 AddMagickCoder(YAML)
 AddMagickCoder(YCBCR)
 AddMagickCoder(YUV)
+
+#define MagickRUSTHeaders
+#define MagickRUSTAliases
+AddMagickCoder(RUST)

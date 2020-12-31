@@ -202,7 +202,8 @@ extern ModuleExport size_t
   RegisterXWDImage(void),
   RegisterYAMLImage(void),
   RegisterYCBCRImage(void),
-  RegisterYUVImage(void);
+  RegisterYUVImage(void),
+  RegisterRUSTImage(void);
 
 extern ModuleExport void
   UnregisterAAIImage(void),
@@ -375,7 +376,8 @@ extern ModuleExport void
   UnregisterXWDImage(void),
   UnregisterYAMLImage(void),
   UnregisterYCBCRImage(void),
-  UnregisterYUVImage(void);
+  UnregisterYUVImage(void),
+  UnregisterRUSTImage(void);
 
 #if defined(__cplusplus) || defined(c_plusplus)
 }

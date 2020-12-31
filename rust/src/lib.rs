@@ -48,9 +48,67 @@
 //  Ok(image.get_first_in_list())
 // }
 
-#[no_mangle]
-extern "C" fn hello_rust(p: *const std::os::raw::c_char, len: usize) {
-    let s =
-        std::str::from_utf8(unsafe { std::slice::from_raw_parts(p as *const u8, len) }).unwrap();
-    println!("Hello {} from Rust!", s);
+#[allow(
+    clippy::all,
+    dead_code,
+    non_camel_case_types,
+    non_upper_case_globals,
+    non_snake_case,
+    improper_ctypes
+)]
+mod bindings {
+    include!(concat!(env!("OUT_DIR"), "/bindings.rs"));
 }
+
+struct ImageInfo;
+struct Image;
+struct ExceptionInfo;
+
+macro_rules! register_coder {
+    ($name:ident, $decoder:ident, $encoder:ident) => {
+        paste::item! {
+            #[no_mangle]
+            pub extern "C" fn [<Register $name Image>]() -> libc::size_t {
+                unsafe extern "C" fn decode(image_info: *const bindings::ImageInfo, exception: *mut bindings::ExceptionInfo) -> *mut bindings::Image {
+                    unimplemented!()
+                }
+
+                unsafe extern "C" fn encode(image_info: *const bindings::ImageInfo, image: *mut bindings::Image, exception: *mut bindings::ExceptionInfo) -> bindings::MagickBooleanType {
+                    unimplemented!()
+                }
+
+                let name = concat!(stringify!($name), "\0");
+                unsafe {
+                    let mut entry = bindings::AcquireMagickInfo(name.as_ptr().cast(), name.as_ptr().cast(), name.as_ptr().cast());
+                    // XXX: these need to be wrappers, not the Rust functions.
+                    (*entry).decoder = Some(decode);
+                    (*entry).encoder = Some(encode);
+                    bindings::RegisterMagickInfo(entry);
+                }
+                bindings::BindingsMagickImageCoderSignature
+            }
+
+            #[no_mangle]
+            pub extern "C" fn [<Unregister $name Image>]() {
+                let name = concat!(stringify!($name), "\0");
+                unsafe {
+                    bindings::UnregisterMagickInfo(name.as_ptr().cast());
+                }
+            }
+        }
+    }
+}
+
+fn read_rust_image(image_info: &ImageInfo, exception_info: &ExceptionInfo) -> Result<Image, ()> {
+    unimplemented!()
+}
+
+fn write_rust_image(
+    image_info: &ImageInfo,
+    image: &mut Image,
+    exception_info: &ExceptionInfo,
+) -> Result<(), ()> {
+    unimplemented!()
+}
+
+register_coder!(RUST, read_rust_image, write_rust_image);
