@@ -20,7 +20,8 @@
 RUST_SOURCES = \
 	rust/Cargo.toml \
 	rust/build.rs \
-	rust/src/lib.rs
+	rust/src/lib.rs \
+	rust/src/bindings.rs
 
 if RUST_DEBUG_RELEASE
 CARGO_RELEASE_ARGS=

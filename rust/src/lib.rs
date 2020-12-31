@@ -1,3 +1,5 @@
+mod bindings;
+
 // fn read_wbmp_image(image_info: &magick::ImageInfo, exception_info: &magick::ExceptionInfo) -> Result<magick::Image, ()> {
 //  let image = image_info.acquire_image(exception_info)?;
 //  image.open_blob(magick::BlobMode::ReadBinary, exception_info)?;
@@ -48,18 +50,6 @@
 //  Ok(image.get_first_in_list())
 // }
 
-#[allow(
-    clippy::all,
-    dead_code,
-    non_camel_case_types,
-    non_upper_case_globals,
-    non_snake_case,
-    improper_ctypes
-)]
-mod bindings {
-    include!(concat!(env!("OUT_DIR"), "/bindings.rs"));
-}
-
 struct ImageInfo;
 struct Image;
 struct ExceptionInfo;
@@ -85,7 +75,7 @@ macro_rules! register_coder {
                     (*entry).encoder = Some(encode);
                     bindings::RegisterMagickInfo(entry);
                 }
-                bindings::BindingsMagickImageCoderSignature
+                bindings::MagickImageCoderSignature
             }
 
             #[no_mangle]
