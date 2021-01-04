@@ -1,88 +1,48 @@
 mod bindings;
 mod coders;
 
-// fn read_wbmp_image(image_info: &magick::ImageInfo, exception_info: &magick::ExceptionInfo) -> Result<magick::Image, ()> {
-//  let image = image_info.acquire_image(exception_info)?;
-//  image.open_blob(magick::BlobMode::ReadBinary, exception_info)?;
+struct ImageInfo(*const bindings::ImageInfo);
+struct Image(*mut bindings::Image);
+struct ExceptionInfo(*mut bindings::ExceptionInfo);
 
-//  let header = image.read_u16_le()?;
-//  if header != 0 {
-//      exception_info.throw(magick::Error::CoderError, "OnlyLevelZerofilesSupported")?;
-//  }
-
-//  let columns = read_wbmp_integer(image)?;
-//  let rows = read_wbmp_integer(image)?;
-//  if rows == 0 || columns == 0 {
-//      exception_info.throw(magick::Error::CorruptImageError, "ImproperImageHeader")?;
-//  }
-
-//  if image.ping() {
-//      image.close_blob();
-//      return Ok(image.get_first_in_list());
-//  }
-
-//  image.set_extent(columns, rows, exception_info)?;
-
-//  image.set_background_color();
-
-//  for y in 0..rows {
-//      let mut q = image.queue_authentic_pixels(0, y, columns, 1, exception_info)?;
-//      let bits_remaining = 0;
-//      let byte = 0;
-//      for x in 0..columns {
-//          if bits_remaining == 0 {
-//              byte = image.read_byte()?;
-//              bits_remaining = 8;
-//          }
-//          let pixel_val = byte & (0x1 << (bits_remaining - 1)) == 0 {
-//              0
-//          } else {
-//              1
-//          };
-//          q.set_pixel(pixel_val);
-//          bits_remaining -= 1;
-//          q.advance(1);
-//      }
-//      image.sync_authentic_pixels(exception_info)?;
-//      image.set_progress(magick::LoadImageTag, y, rows)?;
-//  }
-//  image.sync(exception_info);
-//  image.close_blob();
-//  Ok(image.get_first_in_list())
-// }
-
-struct ImageInfo;
-struct Image;
-struct ExceptionInfo;
-
+#[macro_export]
 macro_rules! register_coder {
     ($name:ident, $decoder:ident, $encoder:ident) => {
         paste::item! {
             #[no_mangle]
             pub extern "C" fn [<Register $name Image>]() -> libc::size_t {
-                unsafe extern "C" fn decode(image_info: *const bindings::ImageInfo, exception: *mut bindings::ExceptionInfo) -> *mut bindings::Image {
+                unsafe extern "C" fn decode(image_info: *const $crate::bindings::ImageInfo, exception: *mut $crate::bindings::ExceptionInfo) -> *mut $crate::bindings::Image {
                     unimplemented!()
                 }
 
-                unsafe extern "C" fn encode(image_info: *const bindings::ImageInfo, image: *mut bindings::Image, exception: *mut bindings::ExceptionInfo) -> bindings::MagickBooleanType {
-                    unimplemented!()
+                unsafe extern "C" fn encode(image_info: *const $crate::bindings::ImageInfo, image: *mut $crate::bindings::Image, exception: *mut $crate::bindings::ExceptionInfo) -> $crate::bindings::MagickBooleanType {
+                    let image_info = $crate::ImageInfo(image_info);
+                    let mut image = $crate::Image(image);
+                    let mut exception_info = $crate::ExceptionInfo(exception);
+                    let result = $encoder(&image_info, &mut image, &mut exception_info);
+                    match result {
+                        Ok(()) => $crate::bindings::MagickTrue,
+                        // TODO: do something with exception info in the Err
+                        // case
+                        Err(()) => $crate::bindings::MagickFalse,
+                    }
                 }
 
                 let name = concat!(stringify!($name), "\0");
                 unsafe {
-                    let mut entry = bindings::AcquireMagickInfo(name.as_ptr().cast(), name.as_ptr().cast(), name.as_ptr().cast());
+                    let mut entry = $crate::bindings::AcquireMagickInfo(name.as_ptr().cast(), name.as_ptr().cast(), name.as_ptr().cast());
                     (*entry).decoder = Some(decode);
                     (*entry).encoder = Some(encode);
-                    bindings::RegisterMagickInfo(entry);
+                    $crate::bindings::RegisterMagickInfo(entry);
                 }
-                bindings::MagickImageCoderSignature
+                $crate::bindings::MagickImageCoderSignature
             }
 
             #[no_mangle]
             pub extern "C" fn [<Unregister $name Image>]() {
                 let name = concat!(stringify!($name), "\0");
                 unsafe {
-                    bindings::UnregisterMagickInfo(name.as_ptr().cast());
+                    $crate::bindings::UnregisterMagickInfo(name.as_ptr().cast());
                 }
             }
         }
