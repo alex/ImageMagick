@@ -1,4 +1,7 @@
-fn read_null_image(image_info: &crate::ImageInfo, exception_info: &crate::ExceptionInfo) -> Result<crate::Image, ()> {
+fn read_null_image(
+    image_info: &crate::ImageInfo,
+    exception_info: &crate::ExceptionInfo,
+) -> Result<crate::Image, ()> {
     unimplemented!()
 }
 
@@ -9,7 +12,7 @@ fn write_null_image(
     _image: &mut crate::Image,
     _exception_info: &mut crate::ExceptionInfo,
 ) -> Result<(), ()> {
-	Ok(())
+    Ok(())
 }
 
 crate::register_coder!(NULL, read_null_image, write_null_image);
