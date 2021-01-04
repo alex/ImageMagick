@@ -110,7 +110,11 @@ AddMagickCoder(MPR)
 AddMagickCoder(MSL)
 AddMagickCoder(MTV)
 AddMagickCoder(MVG)
+
+#define MagickNULLHeaders
+#define MagickNULLAliases
 AddMagickCoder(NULL)
+
 AddMagickCoder(ORA)
 AddMagickCoder(OTB)
 AddMagickCoder(PALM)
@@ -192,7 +196,3 @@ AddMagickCoder(XTRN)
 AddMagickCoder(YAML)
 AddMagickCoder(YCBCR)
 AddMagickCoder(YUV)
-
-#define MagickRUSTHeaders
-#define MagickRUSTAliases
-AddMagickCoder(RUST)

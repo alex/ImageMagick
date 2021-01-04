@@ -21,7 +21,9 @@ RUST_SOURCES = \
 	rust/Cargo.toml \
 	rust/build.rs \
 	rust/src/lib.rs \
-	rust/src/bindings.rs
+	rust/src/bindings.rs \
+	rust/src/coders/mod.rs \
+	rust/src/coders/null.rs
 
 if RUST_DEBUG_RELEASE
 CARGO_RELEASE_ARGS=

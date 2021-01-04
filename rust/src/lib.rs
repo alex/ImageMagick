@@ -1,4 +1,5 @@
 mod bindings;
+mod coders;
 
 // fn read_wbmp_image(image_info: &magick::ImageInfo, exception_info: &magick::ExceptionInfo) -> Result<magick::Image, ()> {
 //  let image = image_info.acquire_image(exception_info)?;
@@ -70,7 +71,6 @@ macro_rules! register_coder {
                 let name = concat!(stringify!($name), "\0");
                 unsafe {
                     let mut entry = bindings::AcquireMagickInfo(name.as_ptr().cast(), name.as_ptr().cast(), name.as_ptr().cast());
-                    // XXX: these need to be wrappers, not the Rust functions.
                     (*entry).decoder = Some(decode);
                     (*entry).encoder = Some(encode);
                     bindings::RegisterMagickInfo(entry);
@@ -88,17 +88,3 @@ macro_rules! register_coder {
         }
     }
 }
-
-fn read_rust_image(image_info: &ImageInfo, exception_info: &ExceptionInfo) -> Result<Image, ()> {
-    unimplemented!()
-}
-
-fn write_rust_image(
-    image_info: &ImageInfo,
-    image: &mut Image,
-    exception_info: &ExceptionInfo,
-) -> Result<(), ()> {
-    unimplemented!()
-}
-
-register_coder!(RUST, read_rust_image, write_rust_image);
