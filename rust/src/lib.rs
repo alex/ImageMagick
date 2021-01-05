@@ -2,8 +2,99 @@ mod bindings;
 mod coders;
 
 struct ImageInfo(*const bindings::ImageInfo);
+
+impl ImageInfo {
+    pub(crate) fn acquire_image(&self) -> Image {
+        unimplemented!()
+    }
+}
+
 struct Image(*mut bindings::Image);
+
+impl Image {
+    pub(crate) fn rows(&self) -> usize {
+        unsafe { (*self.0).rows }
+    }
+
+    pub(crate) fn columns(&self) -> usize {
+        unsafe { (*self.0).columns }
+    }
+
+    pub(crate) fn background_color(&self) -> PixelInfo {
+        unimplemented!();
+    }
+
+    pub(crate) fn set_alpha_trait(&mut self, value: PixelTrait) {
+        unsafe {
+            (*self.0).alpha_trait = value as u32;
+        }
+    }
+
+    pub(crate) fn set_extent(
+        &mut self,
+        cols: usize,
+        rows: usize,
+        exception_info: &mut ExceptionInfo,
+    ) -> Result<(), ()> {
+        unimplemented!();
+    }
+
+    pub(crate) fn conform_pixel_info(
+        &mut self,
+        source: &PixelInfo,
+        exception_info: &mut ExceptionInfo,
+    ) -> Result<PixelInfo, ()> {
+        unimplemented!();
+    }
+
+    pub(crate) fn queue_authentic_pixels(
+        &mut self,
+        x: usize,
+        y: usize,
+        columns: usize,
+        rows: usize,
+        exception_info: &mut ExceptionInfo,
+    ) -> Result<AuthenticPixels, ()> {
+        unimplemented!();
+    }
+
+    pub(crate) fn sync_authentic_pixels(
+        &mut self,
+        exception_info: &mut ExceptionInfo,
+    ) -> Result<(), ()> {
+        unimplemented!();
+    }
+}
+
 struct ExceptionInfo(*mut bindings::ExceptionInfo);
+type Quantum = bindings::Quantum;
+
+struct PixelInfo;
+
+impl PixelInfo {
+    fn set_alpha(&mut self, value: Quantum) {
+        unimplemented!();
+    }
+}
+
+struct AuthenticPixels;
+
+impl AuthenticPixels {
+    fn set_pixel_via_info(&mut self, info: &PixelInfo) {
+        unimplemented!();
+    }
+
+    fn advance(&mut self, n: usize) {
+        unimplemented!();
+    }
+}
+
+pub const TRANSPARENT_ALPHA: Quantum = bindings::TransparentAlpha;
+
+#[repr(u32)]
+enum PixelTrait {
+    Blend = bindings::PixelTrait_BlendPixelTrait,
+}
 
 #[macro_export]
 macro_rules! register_coder {
@@ -12,7 +103,15 @@ macro_rules! register_coder {
             #[no_mangle]
             pub extern "C" fn [<Register $name Image>]() -> libc::size_t {
                 unsafe extern "C" fn decode(image_info: *const $crate::bindings::ImageInfo, exception: *mut $crate::bindings::ExceptionInfo) -> *mut $crate::bindings::Image {
-                    unimplemented!()
+                    let image_info = $crate::ImageInfo(image_info);
+                    let mut exception_info = $crate::ExceptionInfo(exception);
+                    let result = $decoder(&image_info, &mut exception_info);
+                    match result {
+                        Ok(image) => image.0,
+                        // TODO: do something with exception info in the Err
+                        // case
+                        Err(()) => std::ptr::null_mut(),
+                    }
                 }
 
                 unsafe extern "C" fn encode(image_info: *const $crate::bindings::ImageInfo, image: *mut $crate::bindings::Image, exception: *mut $crate::bindings::ExceptionInfo) -> $crate::bindings::MagickBooleanType {
@@ -21,10 +120,10 @@ macro_rules! register_coder {
                     let mut exception_info = $crate::ExceptionInfo(exception);
                     let result = $encoder(&image_info, &mut image, &mut exception_info);
                     match result {
-                        Ok(()) => $crate::bindings::MagickTrue,
+                        Ok(()) => $crate::bindings::MagickBooleanType_MagickTrue,
                         // TODO: do something with exception info in the Err
                         // case
-                        Err(()) => $crate::bindings::MagickFalse,
+                        Err(()) => $crate::bindings::MagickBooleanType_MagickFalse,
                     }
                 }
 

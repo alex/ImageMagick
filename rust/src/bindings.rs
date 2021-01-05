@@ -14,8 +14,5 @@ pub(crate) use bindings::*;
 
 #[allow(non_upper_case_globals)]
 pub const MagickImageCoderSignature: libc::size_t = BindingsMagickImageCoderSignature;
-
 #[allow(non_upper_case_globals)]
-pub const MagickTrue: bindings::MagickBooleanType = MagickBooleanType_MagickTrue;
-#[allow(non_upper_case_globals)]
-pub const MagickFalse: bindings::MagickBooleanType = MagickBooleanType_MagickFalse;
+pub const TransparentAlpha: bindings::Quantum = BindingsTransparentAlpha;
