@@ -36,4 +36,10 @@ fn write_null_image(
     Ok(())
 }
 
-crate::register_coder!(NULL, read_null_image, write_null_image);
+crate::register_coder!(
+    NULL,
+    read_null_image,
+    write_null_image,
+    crate::CoderFlags::DEFAULT - crate::CoderFlags::ADJOIN,
+    crate::FormatType::Implicit
+);

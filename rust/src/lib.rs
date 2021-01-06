@@ -1,6 +1,18 @@
 mod bindings;
 mod coders;
 
+bitflags::bitflags! {
+    struct CoderFlags: u32 {
+        const ADJOIN = bindings::MagickInfoFlag_CoderAdjoinFlag;
+        const BLOB_SUPPORT = bindings::MagickInfoFlag_CoderBlobSupportFlag;
+        const DECODER_THREAD_SUPPORT = bindings::MagickInfoFlag_CoderDecoderThreadSupportFlag;
+        const ENCODER_THREAD_SUPPORT = bindings::MagickInfoFlag_CoderEncoderThreadSupportFlag;
+        const USE_EXTENSION = bindings::MagickInfoFlag_CoderUseExtensionFlag;
+
+        const DEFAULT = Self::ADJOIN.bits | Self::BLOB_SUPPORT.bits | Self::DECODER_THREAD_SUPPORT.bits | Self::ENCODER_THREAD_SUPPORT.bits | Self::USE_EXTENSION.bits;
+    }
+}
+
 struct ImageInfo(*const bindings::ImageInfo);
 
 impl ImageInfo {
@@ -96,9 +108,14 @@ enum PixelTrait {
     Blend = bindings::PixelTrait_BlendPixelTrait,
 }
 
+#[repr(u32)]
+enum FormatType {
+    Implicit = bindings::MagickFormatType_ImplicitFormatType,
+}
+
 #[macro_export]
 macro_rules! register_coder {
-    ($name:ident, $decoder:ident, $encoder:ident) => {
+    ($name:ident, $decoder:ident, $encoder:ident, $flags:expr, $format_type:expr) => {
         paste::item! {
             #[no_mangle]
             pub extern "C" fn [<Register $name Image>]() -> libc::size_t {
@@ -132,6 +149,8 @@ macro_rules! register_coder {
                     let mut entry = $crate::bindings::AcquireMagickInfo(name.as_ptr().cast(), name.as_ptr().cast(), name.as_ptr().cast());
                     (*entry).decoder = Some(decode);
                     (*entry).encoder = Some(encode);
+                    (*entry).flags = ($flags).bits;
+                    (*entry).format_type = $format_type as $crate::bindings::MagickFormatType;
                     $crate::bindings::RegisterMagickInfo(entry);
                 }
                 $crate::bindings::MagickImageCoderSignature
