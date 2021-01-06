@@ -2,7 +2,7 @@ fn read_null_image(
     image_info: &crate::ImageInfo,
     exception_info: &mut crate::ExceptionInfo,
 ) -> Result<crate::Image, ()> {
-    let mut image = image_info.acquire_image();
+    let mut image = image_info.acquire_image(exception_info)?;
     let cols = if image.columns() == 0 {
         1
     } else {

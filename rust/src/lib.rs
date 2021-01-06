@@ -16,8 +16,10 @@ bitflags::bitflags! {
 struct ImageInfo(*const bindings::ImageInfo);
 
 impl ImageInfo {
-    pub(crate) fn acquire_image(&self) -> Image {
-        unimplemented!()
+    pub(crate) fn acquire_image(&self, exception_info: &mut ExceptionInfo) -> Result<Image, ()> {
+        let image = unsafe { bindings::AcquireImage(self.0, exception_info.0) };
+        exception_info.check()?;
+        Ok(Image(image))
     }
 }
 
@@ -48,7 +50,11 @@ impl Image {
         rows: usize,
         exception_info: &mut ExceptionInfo,
     ) -> Result<(), ()> {
-        unimplemented!();
+        let status = unsafe { bindings::SetImageExtent(self.0, cols, rows, exception_info.0) };
+        if status == bindings::MagickBooleanType_MagickFalse {
+            return Err(());
+        }
+        exception_info.check()
     }
 
     pub(crate) fn conform_pixel_info(
@@ -79,6 +85,17 @@ impl Image {
 }
 
 struct ExceptionInfo(*mut bindings::ExceptionInfo);
+
+impl ExceptionInfo {
+    fn check(&self) -> Result<(), ()> {
+        if unsafe { (*self.0).severity } == bindings::ExceptionType_UndefinedException {
+            Ok(())
+        } else {
+            Err(())
+        }
+    }
+}
+
 type Quantum = bindings::Quantum;
 
 struct PixelInfo;
