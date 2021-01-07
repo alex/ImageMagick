@@ -40,7 +40,7 @@ RUST_LIB=@abs_top_builddir@/rust/target/@RUST_TARGET_SUBDIR@/libimagemagick_rust
 
 @abs_top_builddir@/rust/target/@RUST_TARGET_SUBDIR@/libimagemagick_rust.a: $(RUST_SOURCES)
 	cd $(top_srcdir)/rust && \
-	CARGO_TARGET_DIR=@abs_top_builddir@/rust/target cargo build $(CARGO_VERBOSE) $(CARGO_RELEASE_ARGS)
+	CARGO_TARGET_DIR=@abs_top_builddir@/rust/target MAGICK_CLFAGS="${CFLAGS}" cargo build $(CARGO_VERBOSE) $(CARGO_RELEASE_ARGS)
 
 
 topincludedir = @includedir@/MagickCore
