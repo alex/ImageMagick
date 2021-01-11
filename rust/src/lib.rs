@@ -1,3 +1,6 @@
+use std::convert::TryInto;
+use std::mem;
+
 mod bindings;
 mod coders;
 
@@ -35,7 +38,7 @@ impl Image {
     }
 
     pub(crate) fn background_color(&self) -> PixelInfo {
-        unimplemented!();
+        PixelInfo(unsafe { (*self.0).background_color })
     }
 
     pub(crate) fn set_alpha_trait(&mut self, value: PixelTrait) {
@@ -62,7 +65,12 @@ impl Image {
         source: &PixelInfo,
         exception_info: &mut ExceptionInfo,
     ) -> Result<PixelInfo, ()> {
-        unimplemented!();
+        let mut dst = mem::MaybeUninit::uninit();
+        unsafe {
+            bindings::ConformPixelInfo(self.0, &source.0, dst.as_mut_ptr(), exception_info.0);
+        }
+        exception_info.check()?;
+        Ok(PixelInfo(unsafe { dst.assume_init() }))
     }
 
     pub(crate) fn queue_authentic_pixels(
@@ -73,13 +81,25 @@ impl Image {
         rows: usize,
         exception_info: &mut ExceptionInfo,
     ) -> Result<AuthenticPixels, ()> {
-        unimplemented!();
+        let q = unsafe {
+            bindings::QueueAuthenticPixels(
+                self.0,
+                x.try_into().unwrap(),
+                y.try_into().unwrap(),
+                columns,
+                rows,
+                exception_info.0,
+            )
+        };
+        exception_info.check()?;
+        Ok(AuthenticPixels(self, q))
     }
 
     pub(crate) fn sync_authentic_pixels(
         &mut self,
         exception_info: &mut ExceptionInfo,
     ) -> Result<(), ()> {
+        exception_info.check()?;
         unimplemented!();
     }
 }
@@ -98,17 +118,17 @@ impl ExceptionInfo {
 
 type Quantum = bindings::Quantum;
 
-struct PixelInfo;
+struct PixelInfo(bindings::PixelInfo);
 
 impl PixelInfo {
     fn set_alpha(&mut self, value: Quantum) {
-        unimplemented!();
+        self.0.alpha = value.into();
     }
 }
 
-struct AuthenticPixels;
+struct AuthenticPixels<'a>(&'a mut Image, *mut Quantum);
 
-impl AuthenticPixels {
+impl AuthenticPixels<'_> {
     fn set_pixel_via_info(&mut self, info: &PixelInfo) {
         unimplemented!();
     }
