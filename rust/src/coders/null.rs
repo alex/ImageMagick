@@ -17,9 +17,8 @@ fn read_null_image(
 
     for y in 0..rows {
         let mut q = image.queue_authentic_pixels(0, y, cols, 1, exception_info)?;
-        for _x in 0..cols {
-            q.set_pixel_via_info(&background);
-            q.advance(1);
+        for x in 0..cols {
+            q.set_pixel_from_info(x, &background);
         }
         image.sync_authentic_pixels(exception_info)?;
     }

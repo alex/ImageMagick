@@ -37,6 +37,11 @@ impl Image {
         unsafe { (*self.0).columns }
     }
 
+    fn num_channels(&self) -> usize {
+        // TODO: ought to be GetPixelChannel but it's `static inline`
+        unsafe { (*self.0).number_channels }
+    }
+
     pub(crate) fn background_color(&self) -> PixelInfo {
         PixelInfo(unsafe { (*self.0).background_color })
     }
@@ -92,7 +97,16 @@ impl Image {
             )
         };
         exception_info.check()?;
-        Ok(AuthenticPixels(self, q))
+        let q_len = columns
+            .checked_mul(rows)
+            .unwrap()
+            .checked_mul(self.num_channels())
+            .unwrap();
+        Ok(AuthenticPixels {
+            image: self,
+            quantums: q,
+            quantums_length: q_len,
+        })
     }
 
     pub(crate) fn sync_authentic_pixels(
@@ -126,15 +140,19 @@ impl PixelInfo {
     }
 }
 
-struct AuthenticPixels<'a>(&'a mut Image, *mut Quantum);
+struct AuthenticPixels<'a> {
+    image: &'a mut Image,
+    quantums: *mut Quantum,
+    quantums_length: usize,
+}
 
 impl AuthenticPixels<'_> {
-    fn set_pixel_via_info(&mut self, info: &PixelInfo) {
-        unimplemented!();
-    }
-
-    fn advance(&mut self, n: usize) {
-        unimplemented!();
+    fn set_pixel_from_info(&mut self, idx: usize, pixel: &PixelInfo) {
+        let pos = self.image.num_channels().checked_mul(idx).unwrap();
+        assert!(pos < self.quantums_length);
+        unsafe {
+            bindings::SetPixelViaPixelInfo(self.image.0, pixel.0, self.quantums.add(pos));
+        }
     }
 }
 
