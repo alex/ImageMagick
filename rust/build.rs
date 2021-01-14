@@ -4,13 +4,11 @@ use std::path::PathBuf;
 fn main() {
     let mut clang_args = vec!["-I../".to_string()];
     if let Ok(cflags) = env::var("MAGICK_CLFAGS") {
-        // XXX: THIS IS WRONG AND BROKEN IF YOU HAVE A PATH A SPACE OR ANYTHING
-        // LIKE THAT. USE A REAL PARSER HERE.
-        for flag in cflags.split(' ') {
+        for flag in shlex::split(&cflags).unwrap() {
             if flag.is_empty() {
                 continue;
             }
-            clang_args.push(flag.to_string());
+            clang_args.push(flag);
         }
     }
 

@@ -112,9 +112,7 @@ impl Image {
         &mut self,
         exception_info: &mut ExceptionInfo,
     ) -> Result<(), ()> {
-        let status = unsafe {
-            bindings::SyncAuthenticPixels(self.0, exception_info.0)
-        };
+        let status = unsafe { bindings::SyncAuthenticPixels(self.0, exception_info.0) };
         if status == bindings::MagickBooleanType_MagickFalse {
             return Err(());
         }
