@@ -6,3 +6,7 @@ void rust_SetPixelViaPixelInfo(const Image *magick_restrict image,
 
     SetPixelViaPixelInfo(image, pixel_info, pixel);
 }
+
+size_t rust_GetPixelChannels(const Image *magick_restrict image) {
+	return GetPixelChannels(image);
+}

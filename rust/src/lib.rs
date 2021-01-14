@@ -38,8 +38,7 @@ impl Image {
     }
 
     fn num_channels(&self) -> usize {
-        // TODO: ought to be GetPixelChannel but it's `static inline`
-        unsafe { (*self.0).number_channels }
+        unsafe { bindings::rust_GetPixelChannels(self.0) }
     }
 
     pub(crate) fn background_color(&self) -> PixelInfo {

@@ -20,8 +20,8 @@
 RUST_SOURCES = \
 	rust/Cargo.toml \
 	rust/build.rs \
-	rust/src/wrapper.c \
-	rust/src/wrapper.h \
+	rust/wrapper.c \
+	rust/wrapper.h \
 	rust/src/lib.rs \
 	rust/src/bindings.rs \
 	rust/src/coders/mod.rs \
