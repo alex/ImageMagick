@@ -22,3 +22,9 @@
 const size_t BindingsMagickImageCoderSignature = MagickImageCoderSignature;
 
 const Quantum BindingsTransparentAlpha = TransparentAlpha;
+
+// Definitions for static inline functions from ImageMagick that we re-export
+// in wrapper.c
+void rust_SetPixelViaPixelInfo(const Image *magick_restrict image,
+    const PixelInfo *magick_restrict pixel_info,
+    Quantum *magick_restrict pixel);

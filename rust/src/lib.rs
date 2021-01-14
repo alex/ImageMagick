@@ -113,8 +113,14 @@ impl Image {
         &mut self,
         exception_info: &mut ExceptionInfo,
     ) -> Result<(), ()> {
+        let status = unsafe {
+            bindings::SyncAuthenticPixels(self.0, exception_info.0)
+        };
+        if status == bindings::MagickBooleanType_MagickFalse {
+            return Err(());
+        }
         exception_info.check()?;
-        unimplemented!();
+        Ok(())
     }
 }
 
@@ -151,7 +157,7 @@ impl AuthenticPixels<'_> {
         let pos = self.image.num_channels().checked_mul(idx).unwrap();
         assert!(pos < self.quantums_length);
         unsafe {
-            bindings::SetPixelViaPixelInfo(self.image.0, pixel.0, self.quantums.add(pos));
+            bindings::rust_SetPixelViaPixelInfo(self.image.0, &pixel.0, self.quantums.add(pos));
         }
     }
 }

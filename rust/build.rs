@@ -7,6 +7,9 @@ fn main() {
         // XXX: THIS IS WRONG AND BROKEN IF YOU HAVE A PATH A SPACE OR ANYTHING
         // LIKE THAT. USE A REAL PARSER HERE.
         for flag in cflags.split(' ') {
+            if flag.is_empty() {
+                continue;
+            }
             clang_args.push(flag.to_string());
         }
     }
@@ -15,7 +18,7 @@ fn main() {
 
     let bindings = bindgen::Builder::default()
         .header("wrapper.h")
-        .clang_args(clang_args)
+        .clang_args(clang_args.iter())
         .blacklist_item("FP_.*")
         .size_t_is_usize(true)
         .parse_callbacks(Box::new(bindgen::CargoCallbacks))
@@ -26,4 +29,11 @@ fn main() {
     bindings
         .write_to_file(out_path.join("bindings.rs"))
         .expect("Error writing bindings");
+
+    let mut b = cc::Build::new();
+    b.file("wrapper.c");
+    for arg in clang_args {
+        b.flag(&arg);
+    }
+    b.compile("rust_imagemagick_wrapper")
 }
