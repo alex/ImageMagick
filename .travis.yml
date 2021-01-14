@@ -19,6 +19,7 @@ before_script:
 script: |
   set -e
   set -x
+  source $HOME/.cargo/env
   export CFLAGS="-Wno-deprecated-declarations -Wdeclaration-after-statement -Wno-error=unused-variable"
   if [ "$TRAVIS_COMPILER" == "gcc" ] ; then
     ./configure --with-quantum-depth=16 --enable-hdri=no --without-perl --prefix=/usr
