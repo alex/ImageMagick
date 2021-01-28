@@ -25,7 +25,8 @@ RUST_SOURCES = \
 	rust/src/lib.rs \
 	rust/src/bindings.rs \
 	rust/src/coders/mod.rs \
-	rust/src/coders/null.rs
+	rust/src/coders/null.rs \
+	rust/src/coders/wbmp.rs
 
 if RUST_DEBUG_RELEASE
 CARGO_RELEASE_ARGS=

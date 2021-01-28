@@ -9,18 +9,21 @@ fn read_null_image(
         image.columns()
     };
     let rows = if image.rows() == 0 { 1 } else { image.rows() };
+    let background_color = image.background_color();
 
-    image.set_alpha_trait(crate::PixelTrait::Blend);
-    image.set_extent(cols, rows, exception_info)?;
-    let mut background = image.conform_pixel_info(&image.background_color(), exception_info)?;
+    let (mut canvas, _) =
+        image.open_blob_read(image_info, crate::BlobMode::Binary, exception_info)?;
+    canvas.set_alpha_trait(crate::PixelTrait::Blend);
+    canvas.set_extent(cols, rows, exception_info)?;
+    let mut background = canvas.conform_pixel_info(&background_color, exception_info)?;
     background.set_alpha(crate::TRANSPARENT_ALPHA);
 
     for y in 0..rows {
-        let mut q = image.queue_authentic_pixels(0, y, cols, 1, exception_info)?;
+        let mut q = canvas.queue_authentic_pixels(0, y, cols, 1, exception_info)?;
         for x in 0..cols {
             q.set_pixel_from_info(x, &background);
         }
-        image.sync_authentic_pixels(exception_info)?;
+        canvas.sync_authentic_pixels(exception_info)?;
     }
     Ok(image)
 }
@@ -37,6 +40,7 @@ fn write_null_image(
 
 crate::register_coder!(
     NULL,
+    "Constant image of uniform color",
     read_null_image,
     write_null_image,
     crate::CoderFlags::DEFAULT - crate::CoderFlags::ADJOIN,

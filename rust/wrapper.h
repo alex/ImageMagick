@@ -1,9 +1,11 @@
 #include "MagickCore/studio.h"
+#include "MagickCore/attribute.h"
 #include "MagickCore/blob.h"
 #include "MagickCore/blob-private.h"
 #include "MagickCore/cache.h"
 #include "MagickCore/color.h"
 #include "MagickCore/color-private.h"
+#include "MagickCore/colormap.h"
 #include "MagickCore/colorspace-private.h"
 #include "MagickCore/exception.h"
 #include "MagickCore/exception-private.h"
@@ -28,5 +30,10 @@ const Quantum BindingsTransparentAlpha = TransparentAlpha;
 void rust_SetPixelViaPixelInfo(const Image *magick_restrict image,
     const PixelInfo *magick_restrict pixel_info,
     Quantum *magick_restrict pixel);
+void rust_SetPixelIndex(const Image *magick_restrict image,
+    const Quantum index, Quantum *magick_restrict pixel);
+
+MagickRealType rust_GetPixelLuma(const Image *magick_restrict image,
+    const Quantum *magick_restrict pixel);
 
 size_t rust_GetPixelChannels(const Image *magick_restrict image);

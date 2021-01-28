@@ -336,8 +336,6 @@ MAGICKCORE_CODER_SRCS = \
 	coders/viff.h \
 	coders/vips.c \
 	coders/vips.h \
-	coders/wbmp.c \
-	coders/wbmp.h \
 	coders/webp.h \
 	coders/wmf.h \
 	coders/wpg.c \
@@ -507,7 +505,6 @@ CODERS_NOINST_HDRS = \
 	coders/video.h \
 	coders/viff.h \
 	coders/vips.h \
-	coders/wbmp.h \
 	coders/webp.h \
 	coders/wmf.h \
 	coders/wpg.h \
@@ -630,7 +627,6 @@ coders_LTLIBRARIES = \
 	coders/video.la \
 	coders/viff.la \
 	coders/vips.la \
-	coders/wbmp.la \
 	coders/wpg.la \
 	coders/xbm.la \
 	coders/xc.la \
@@ -1380,12 +1376,6 @@ coders_vips_la_SOURCES     = coders/vips.c
 coders_vips_la_CPPFLAGS    = $(MAGICK_CODER_CPPFLAGS)
 coders_vips_la_LDFLAGS     = $(MODULECOMMONFLAGS)
 coders_vips_la_LIBADD      = $(MAGICKCORE_LIBS)
-
-# WBMP coder module
-coders_wbmp_la_SOURCES     = coders/wbmp.c
-coders_wbmp_la_CPPFLAGS    = $(MAGICK_CODER_CPPFLAGS)
-coders_wbmp_la_LDFLAGS     = $(MODULECOMMONFLAGS)
-coders_wbmp_la_LIBADD      = $(MAGICKCORE_LIBS)
 
 # WEBP coder module
 coders_webp_la_SOURCES     = coders/webp.c

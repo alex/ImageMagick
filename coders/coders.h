@@ -172,7 +172,6 @@
 #include "coders/video.h"
 #include "coders/viff.h"
 #include "coders/vips.h"
-#include "coders/wbmp.h"
 #if defined(MAGICKCORE_WEBP_DELEGATE)
   #include "coders/webp.h"
 #endif

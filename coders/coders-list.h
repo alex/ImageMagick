@@ -173,7 +173,11 @@ AddMagickCoder(VID)
 AddMagickCoder(VIDEO)
 AddMagickCoder(VIFF)
 AddMagickCoder(VIPS)
+
+#define MagickWBMPHeaders
+#define MagickWBMPAliases
 AddMagickCoder(WBMP)
+
 #if defined(MAGICKCORE_WEBP_DELEGATE)
   AddMagickCoder(WEBP)
 #endif
