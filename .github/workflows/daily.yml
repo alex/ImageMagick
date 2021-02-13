@@ -32,6 +32,14 @@ jobs:
         apt update
         apt-get install -y autoconf pkg-config gcc libfontconfig1-dev libfreetype6-dev libltdl-dev
 
+    - name: Install Rust
+      uses: actions-rs/toolchain@v1
+      with:
+        profile: minimal
+        toolchain: stable
+        default: true
+        override: true
+
     - name: Clone msttcorefonts
       uses: actions/checkout@v2
       with:
@@ -83,6 +91,14 @@ jobs:
             hdri: no
 
     steps:
+    - name: Install Rust
+      uses: actions-rs/toolchain@v1
+      with:
+        profile: minimal
+        toolchain: stable
+        default: true
+        override: true
+
     - name: Clone ImageMagick-Windows
       uses: actions/checkout@v2
       with:
