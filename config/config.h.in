@@ -251,6 +251,9 @@
 /* Define to 1 if you have the `j1' function. */
 #undef HAVE_J1
 
+/* Define if you have jemalloc memory allocation library */
+#undef HAVE_JEMALLOC
+
 /* Define if you have the <lcms2.h> header file. */
 #undef HAVE_LCMS2_H
 
@@ -598,6 +601,9 @@
 /* Define to 1 if you have the `TIFFReadEXIFDirectory' function. */
 #undef HAVE_TIFFREADEXIFDIRECTORY
 
+/* Define to 1 if you have the `TIFFReadGPSDirectory' function. */
+#undef HAVE_TIFFREADGPSDIRECTORY
+
 /* Define to 1 if you have the `TIFFSetErrorHandlerExt' function. */
 #undef HAVE_TIFFSETERRORHANDLEREXT
 
@@ -723,9 +729,6 @@
 /* Define if you have libheif library */
 #undef HEIC_DELEGATE
 
-/* Define if you have jemalloc memory allocation library */
-#undef HasJEMALLOC
-
 /* Directory where ImageMagick architecture headers live. */
 #undef INCLUDEARCH_PATH
 
@@ -741,7 +744,7 @@
 /* Define if you have JPEG library */
 #undef JPEG_DELEGATE
 
-/* Define if you have brunsli library */
+/* Define if you have jpeg-xl library */
 #undef JXL_DELEGATE
 
 /* Define if you have LCMS library */
@@ -806,9 +809,6 @@
 
 /* Define if you have OPENEXR library */
 #undef OPENEXR_DELEGATE
-
-/* Name of package */
-#undef PACKAGE
 
 /* Define to the address where bug reports for this package should be sent. */
 #undef PACKAGE_BUGREPORT
@@ -899,6 +899,9 @@
 /* The size of `long double', as computed by sizeof. */
 #undef SIZEOF_LONG_DOUBLE
 
+/* The size of `ssize_t', as computed by sizeof. */
+#undef SIZEOF_SSIZE_T
+
 /* The size of `unsigned long long', as computed by sizeof. */
 #undef SIZEOF_UNSIGNED_LONG_LONG
 
@@ -948,9 +951,6 @@
 #endif
 
 
-/* Version number of package */
-#undef VERSION
-
 /* Define if you have WEBPMUX library */
 #undef WEBPMUX_DELEGATE
 
@@ -993,8 +993,8 @@
 /* Build self-contained, embeddable, zero-configuration ImageMagick */
 #undef ZERO_CONFIGURATION_SUPPORT
 
-/* Define if you have ZIPLIB library */
-#undef ZIPLIB_DELEGATE
+/* Define if you have ZIP library */
+#undef ZIP_DELEGATE
 
 /* Define if you have ZLIB library */
 #undef ZLIB_DELEGATE

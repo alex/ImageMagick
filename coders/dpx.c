@@ -17,7 +17,7 @@
 %                                March 2001                                   %
 %                                                                             %
 %                                                                             %
-%  Copyright 1999-2020 ImageMagick Studio LLC, a non-profit organization      %
+%  Copyright 1999-2021 ImageMagick Studio LLC, a non-profit organization      %
 %  dedicated to making software imaging solutions freely available.           %
 %                                                                             %
 %  You may not use this file except in compliance with the License.  You may  %
@@ -635,7 +635,7 @@ static void TimeCodeToString(const size_t timestamp,char *code)
   unsigned int
     shift;
 
-  register ssize_t
+  ssize_t
     i;
 
   *code='\0';
@@ -676,7 +676,7 @@ static Image *ReadDPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
   QuantumType
     quantum_type;
 
-  register ssize_t
+  ssize_t
     i;
 
   size_t
@@ -1252,7 +1252,7 @@ static Image *ReadDPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
       MagickBooleanType
         sync;
 
-      register Quantum
+      Quantum
         *q;
 
       size_t
@@ -1420,7 +1420,7 @@ static unsigned int StringToTimeCode(const char *key)
   char
     buffer[2];
 
-  register ssize_t
+  ssize_t
     i;
 
   unsigned int
@@ -1486,10 +1486,10 @@ static MagickBooleanType WriteDPXImage(const ImageInfo *image_info,Image *image,
   QuantumType
     quantum_type;
 
-  register const Quantum
+  const Quantum
     *p;
 
-  register ssize_t
+  ssize_t
     i;
 
   size_t

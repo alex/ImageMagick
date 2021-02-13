@@ -17,7 +17,7 @@
 %                              January 2003                                   %
 %                                                                             %
 %                                                                             %
-%  Copyright 1999-2020 ImageMagick Studio LLC, a non-profit organization      %
+%  Copyright 1999-2021 ImageMagick Studio LLC, a non-profit organization      %
 %  dedicated to making software imaging solutions freely available.           %
 %                                                                             %
 %  You may not use this file except in compliance with the License.  You may  %
@@ -464,7 +464,7 @@ MagickExport char *GetPageGeometry(const char *page_geometry)
   char
     page[MaxTextExtent];
 
-  register ssize_t
+  ssize_t
     i;
 
   assert(page_geometry != (char *) NULL);
@@ -663,7 +663,12 @@ MagickExport MagickBooleanType IsSceneGeometry(const char *geometry,
     return(MagickFalse);
   p=(char *) geometry;
   value=StringToDouble(geometry,&p);
-  (void) value;
+  if (IsNaN(value) != 0)
+    return(MagickFalse);
+  if (value > (double) MAGICK_SSIZE_MAX)
+    return(MagickFalse);
+  if (value < (double) MAGICK_SSIZE_MIN)
+    return(MagickFalse);
   if (p == geometry)
     return(MagickFalse);
   if (strspn(geometry,"0123456789-, ") != strlen(geometry))
@@ -758,7 +763,7 @@ MagickExport MagickStatusType ParseAffineGeometry(const char *geometry,
   MagickStatusType
     flags;
 
-  register ssize_t
+  ssize_t
     i;
 
   GetAffineMatrix(affine_matrix);
@@ -900,7 +905,7 @@ MagickExport MagickStatusType ParseGeometry(const char *geometry,
   for (p=pedantic_geometry; *p != '\0'; )
   {
     c=(int) ((unsigned char) *p);
-    if (isspace(c) != 0)
+    if (isspace((int) ((unsigned char) c)) != 0)
       {
         (void) CopyMagickString(p,p+1,MagickPathExtent);
         continue;

@@ -17,7 +17,7 @@
 %                                 March 2000                                  %
 %                                                                             %
 %                                                                             %
-%  Copyright 1999-2020 ImageMagick Studio LLC, a non-profit organization      %
+%  Copyright 1999-2021 ImageMagick Studio LLC, a non-profit organization      %
 %  dedicated to making software imaging solutions freely available.           %
 %                                                                             %
 %  You may not use this file except in compliance with the License.  You may  %
@@ -174,7 +174,7 @@ static Image *ReadMPCImage(const ImageInfo *image_info,ExceptionInfo *exception)
   MagickStatusType
     flags;
 
-  register ssize_t
+  ssize_t
     i;
 
   size_t
@@ -228,9 +228,9 @@ static Image *ReadMPCImage(const ImageInfo *image_info,ExceptionInfo *exception)
     signature=GetMagickSignature((const StringInfo *) NULL);
     image->depth=8;
     image->compression=NoCompression;
-    while ((isgraph(c) != MagickFalse) && (c != (int) ':'))
+    while ((isgraph((int) ((unsigned char) c)) != 0) && (c != (int) ':'))
     {
-      register char
+      char
         *p;
 
       if (c == (int) '{')
@@ -275,7 +275,7 @@ static Image *ReadMPCImage(const ImageInfo *image_info,ExceptionInfo *exception)
           c=ReadBlobByte(image);
         }
       else
-        if (isalnum(c) != MagickFalse)
+        if (isalnum((int) ((unsigned char) c)) != MagickFalse)
           {
             /*
               Get the keyword.
@@ -292,7 +292,7 @@ static Image *ReadMPCImage(const ImageInfo *image_info,ExceptionInfo *exception)
             } while (c != EOF);
             *p='\0';
             p=options;
-            while (isspace(c) != 0)
+            while (isspace((int) ((unsigned char) c)) != 0)
               c=ReadBlobByte(image);
             if (c == (int) '=')
               {
@@ -324,7 +324,7 @@ static Image *ReadMPCImage(const ImageInfo *image_info,ExceptionInfo *exception)
                         }
                     }
                   if (*options != '{')
-                    if (isspace(c) != 0)
+                    if (isspace((int) ((unsigned char) c)) != 0)
                       break;
                 }
                 if (options == (char *) NULL)
@@ -775,7 +775,7 @@ static Image *ReadMPCImage(const ImageInfo *image_info,ExceptionInfo *exception)
           }
         else
           c=ReadBlobByte(image);
-      while (isspace(c) != 0)
+      while (isspace((int) ((unsigned char) c)) != 0)
         c=ReadBlobByte(image);
     }
     options=DestroyString(options);
@@ -804,7 +804,7 @@ static Image *ReadMPCImage(const ImageInfo *image_info,ExceptionInfo *exception)
       }
     if (image->montage != (char *) NULL)
       {
-        register char
+        char
           *p;
 
         /*
@@ -1006,7 +1006,7 @@ static Image *ReadMPCImage(const ImageInfo *image_info,ExceptionInfo *exception)
     do
     {
       c=ReadBlobByte(image);
-    } while ((isgraph(c) == MagickFalse) && (c != EOF));
+    } while ((isgraph((int) ((unsigned char) c)) == 0) && (c != EOF));
     if (c != EOF)
       {
         /*
@@ -1142,7 +1142,7 @@ static MagickBooleanType WriteMPCImage(const ImageInfo *image_info,Image *image,
     offset,
     scene;
 
-  register ssize_t
+  ssize_t
     i;
 
   size_t

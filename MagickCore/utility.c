@@ -17,7 +17,7 @@
 %                              January 1993                                   %
 %                                                                             %
 %                                                                             %
-%  Copyright 1999-2020 ImageMagick Studio LLC, a non-profit organization      %
+%  Copyright 1999-2021 ImageMagick Studio LLC, a non-profit organization      %
 %  dedicated to making software imaging solutions freely available.           %
 %                                                                             %
 %  You may not use this file except in compliance with the License.  You may  %
@@ -348,11 +348,11 @@ MagickExport unsigned char *Base64Decode(const char *source,size_t *length)
   int
     state;
 
-  register const char
+  const char
     *p,
     *q;
 
-  register size_t
+  size_t
     i;
 
   unsigned char
@@ -504,10 +504,10 @@ MagickExport char *Base64Encode(const unsigned char *blob,
   char
     *encode;
 
-  register const unsigned char
+  const unsigned char
     *p;
 
-  register size_t
+  size_t
     i;
 
   size_t
@@ -583,7 +583,7 @@ MagickExport char *Base64Encode(const unsigned char *blob,
 */
 MagickPrivate void ChopPathComponents(char *path,const size_t components)
 {
-  register ssize_t
+  ssize_t
     i;
 
   for (i=0; i < (ssize_t) components; i++)
@@ -652,7 +652,7 @@ MagickPrivate void ExpandFilename(char *path)
 #endif
         username[MagickPathExtent];
 
-      register char
+      char
         *p;
 
       struct passwd
@@ -751,7 +751,7 @@ MagickExport MagickBooleanType ExpandFilenames(int *number_arguments,
     home_directory[MagickPathExtent],
     **vector;
 
-  register ssize_t
+  ssize_t
     i,
     j;
 
@@ -1226,7 +1226,7 @@ MagickExport void GetPathComponent(const char *path,PathType type,
   char
     *q;
 
-  register char
+  char
     *p;
 
   size_t
@@ -1359,6 +1359,23 @@ MagickExport void GetPathComponent(const char *path,PathType type,
             }
       break;
     }
+    case BasePathSansCompressExtension:
+    {
+      char
+        extension[MagickPathExtent];
+
+      /*
+        Base path sans any compression extension.
+      */
+      GetPathComponent(path,ExtensionPath,extension);
+      if ((LocaleCompare(extension,"bz2") == 0) ||
+          (LocaleCompare(extension,"gz") == 0) ||
+          (LocaleCompare(extension,"svgz") == 0) ||
+          (LocaleCompare(extension,"wmz") == 0) ||
+          (LocaleCompare(extension,"Z") == 0))
+        GetPathComponent(path,BasePath,component);
+      break;
+    }
     case ExtensionPath:
     {
       if (IsBasenameSeparator(*p) != MagickFalse)
@@ -1417,11 +1434,11 @@ MagickPrivate char **GetPathComponents(const char *path,
   char
     **components;
 
-  register const char
+  const char
     *p,
     *q;
 
-  register ssize_t
+  ssize_t
     i;
 
   if (path == (char *) NULL)
@@ -1578,7 +1595,7 @@ extern "C" {
 
 static int FileCompare(const void *x,const void *y)
 {
-  register const char
+  const char
     **p,
     **q;
 
@@ -1661,7 +1678,7 @@ MagickPrivate char **ListFiles(const char *directory,const char *pattern,
           }
 #if defined(vms)
         {
-          register char
+          char
             *p;
 
           p=strchr(entry->d_name,';');
@@ -1839,7 +1856,7 @@ MagickPrivate MagickBooleanType ShredFile(const char *path)
   MagickSizeType
     length;
 
-  register ssize_t
+  ssize_t
     i;
 
   size_t
@@ -1892,7 +1909,7 @@ MagickPrivate MagickBooleanType ShredFile(const char *path)
     RandomInfo
       *random_info;
 
-    register MagickOffsetType
+    MagickOffsetType
       j;
 
     ssize_t

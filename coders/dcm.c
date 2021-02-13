@@ -17,7 +17,7 @@
 %                                 July 1992                                   %
 %                                                                             %
 %                                                                             %
-%  Copyright 1999-2020 ImageMagick Studio LLC, a non-profit organization      %
+%  Copyright 1999-2021 ImageMagick Studio LLC, a non-profit organization      %
 %  dedicated to making software imaging solutions freely available.           %
 %                                                                             %
 %  You may not use this file except in compliance with the License.  You may  %
@@ -2841,11 +2841,11 @@ static MagickBooleanType ReadDCMPixels(Image *image,DCMInfo *info,
   PixelPacket
     pixel;
 
-  register ssize_t
+  ssize_t
     i,
     x;
 
-  register Quantum
+  Quantum
     *q;
 
   ssize_t
@@ -2978,12 +2978,12 @@ static MagickBooleanType ReadDCMPixels(Image *image,DCMInfo *info,
         }
       else
         {
-          SetPixelRed(image,(Quantum) (((size_t) pixel.red) |
-            (((size_t) GetPixelRed(image,q)) << 8)),q);
-          SetPixelGreen(image,(Quantum) (((size_t) pixel.green) |
-            (((size_t) GetPixelGreen(image,q)) << 8)),q);
-          SetPixelBlue(image,(Quantum) (((size_t) pixel.blue) |
-            (((size_t) GetPixelBlue(image,q)) << 8)),q);
+          SetPixelRed(image,(Quantum) (((ssize_t) pixel.red) |
+            (((ssize_t) GetPixelRed(image,q)) << 8)),q);
+          SetPixelGreen(image,(Quantum) (((ssize_t) pixel.green) |
+            (((ssize_t) GetPixelGreen(image,q)) << 8)),q);
+          SetPixelBlue(image,(Quantum) (((ssize_t) pixel.blue) |
+            (((ssize_t) GetPixelBlue(image,q)) << 8)),q);
         }
       q+=GetPixelChannels(image);
     }
@@ -3060,10 +3060,10 @@ static Image *ReadDCMImage(const ImageInfo *image_info,ExceptionInfo *exception)
   MagickOffsetType
     offset;
 
-  register unsigned char
+  unsigned char
     *p;
 
-  register ssize_t
+  ssize_t
     i;
 
   size_t
@@ -3308,8 +3308,9 @@ static Image *ReadDCMImage(const ImageInfo *image_info,ExceptionInfo *exception)
             if ((group == dicom_info[i].group) &&
                 (element == dicom_info[i].element))
               break;
-          (void) FormatLocaleFile(stdout,"0x%04lX %4ld S%ld %s-%s (0x%04lx,0x%04lx)",
-            (unsigned long) image->offset,(long) length,sequence_depth,
+          (void) FormatLocaleFile(stdout,
+            "0x%04lX %4ld S%ld %s-%s (0x%04lx,0x%04lx)",
+            (unsigned long) image->offset,(long) length,(long) sequence_depth,
             implicit_vr,explicit_vr,(unsigned long) group,
             (unsigned long) element);
           if (dicom_info[i].description != (char *) NULL)
@@ -4157,10 +4158,10 @@ static Image *ReadDCMImage(const ImageInfo *image_info,ExceptionInfo *exception)
         }
       if ((info.samples_per_pixel > 1) && (image->interlace == PlaneInterlace))
         {
-          register ssize_t
+          ssize_t
             x;
 
-          register Quantum
+          Quantum
             *q;
 
           ssize_t

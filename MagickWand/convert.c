@@ -17,7 +17,7 @@
 %                                April 1992                                   %
 %                                                                             %
 %                                                                             %
-%  Copyright 1999-2020 ImageMagick Studio LLC, a non-profit organization      %
+%  Copyright 1999-2021 ImageMagick Studio LLC, a non-profit organization      %
 %  dedicated to making software imaging solutions freely available.           %
 %                                                                             %
 %  You may not use this file except in compliance with the License.  You may  %
@@ -96,7 +96,7 @@ static MagickBooleanType ConcatenateImages(int argc,char **argv,
   MagickBooleanType
     status;
 
-  register ssize_t
+  ssize_t
     i;
 
   /*
@@ -289,6 +289,7 @@ static MagickBooleanType ConvertUsage(void)
       "                       shadows\n"
       "  -sketch geometry     simulate a pencil sketch\n"
       "  -solarize threshold  negate all pixels above the threshold level\n"
+      "  -sort-pixels         sort each scanline in ascending order of intensity\n"
       "  -sparse-color method args\n"
       "                       fill in a image based on a few color points\n"
       "  -splice geometry     splice the background color into the image\n"
@@ -525,7 +526,7 @@ WandExport MagickBooleanType ConvertImageCommand(ImageInfo *image_info,
   MagickStatusType
     status;
 
-  register ssize_t
+  ssize_t
     i;
 
   ssize_t
@@ -2864,6 +2865,8 @@ WandExport MagickBooleanType ConvertImageCommand(ImageInfo *image_info,
               ThrowConvertInvalidArgumentException(option,argv[i]);
             break;
           }
+        if (LocaleCompare("sort-pixels",option+1) == 0)
+          break;
         if (LocaleCompare("sparse-color",option+1) == 0)
           {
             ssize_t

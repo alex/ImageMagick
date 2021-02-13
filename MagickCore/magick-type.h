@@ -1,5 +1,5 @@
 /*
-  Copyright 1999-2020 ImageMagick Studio LLC, a non-profit organization
+  Copyright 1999-2021 ImageMagick Studio LLC, a non-profit organization
   dedicated to making software imaging solutions freely available.
 
   You may not use this file except in compliance with the License.  You may
@@ -40,9 +40,6 @@ extern "C" {
 #  define MagickULLConstant(c)  ((MagickSizeType) (c ## ULL))
 #endif
 
-#if defined(__s390__)
-typedef double MagickFloatType;
-#else
 #if MAGICKCORE_SIZEOF_FLOAT_T == 0
 typedef float MagickFloatType;
 #elif (MAGICKCORE_SIZEOF_FLOAT_T == MAGICKCORE_SIZEOF_FLOAT)
@@ -53,7 +50,6 @@ typedef double MagickFloatType;
 typedef double MagickFloatType;
 #else
 #error Your MagickFloatType type is neither a float, nor a double, nor a long double
-#endif
 #endif
 #if MAGICKCORE_SIZEOF_DOUBLE_T == 0
 typedef double MagickDoubleType;

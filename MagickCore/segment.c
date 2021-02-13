@@ -17,7 +17,7 @@
 %                                April 1993                                   %
 %                                                                             %
 %                                                                             %
-%  Copyright 1999-2020 ImageMagick Studio LLC, a non-profit organization      %
+%  Copyright 1999-2021 ImageMagick Studio LLC, a non-profit organization      %
 %  dedicated to making software imaging solutions freely available.           %
 %                                                                             %
 %  You may not use this file except in compliance with the License.  You may  %
@@ -221,8 +221,7 @@ static void
 %  The format of the Classify method is:
 %
 %      MagickBooleanType Classify(Image *image,short **extrema,
-%        const double cluster_threshold,
-%        const double weighting_exponent,
+%        const double cluster_threshold,const double weighting_exponent,
 %        const MagickBooleanType verbose,ExceptionInfo *exception)
 %
 %  A description of each parameter follows.
@@ -246,9 +245,8 @@ static void
 %
 */
 static MagickBooleanType Classify(Image *image,short **extrema,
-  const double cluster_threshold,
-  const double weighting_exponent,const MagickBooleanType verbose,
-  ExceptionInfo *exception)
+  const double cluster_threshold,const double weighting_exponent,
+  const MagickBooleanType verbose,ExceptionInfo *exception)
 {
 #define SegmentImageTag  "Segment/Image"
 #define ThrowClassifyException(severity,tag,label) \
@@ -276,6 +274,9 @@ static MagickBooleanType Classify(Image *image,short **extrema,
     *last_cluster,
     *next_cluster;
 
+  double
+    *free_squares;
+
   ExtentPacket
     blue,
     green,
@@ -284,16 +285,13 @@ static MagickBooleanType Classify(Image *image,short **extrema,
   MagickOffsetType
     progress;
 
-  double
-    *free_squares;
-
   MagickStatusType
     status;
 
-  register ssize_t
+  ssize_t
     i;
 
-  register double
+  double
     *squares;
 
   size_t
@@ -340,11 +338,10 @@ static MagickBooleanType Classify(Image *image,short **extrema,
         /*
           Initialize a new class.
         */
-        cluster->count=0;
+        (void) memset(cluster,0,sizeof(*cluster));
         cluster->red=red;
         cluster->green=green;
         cluster->blue=blue;
-        cluster->next=(Cluster *) NULL;
       }
     }
   }
@@ -360,11 +357,10 @@ static MagickBooleanType Classify(Image *image,short **extrema,
       /*
         Initialize a new class.
       */
-      cluster->count=0;
+      (void) memset(cluster,0,sizeof(*cluster));
       cluster->red=red;
       cluster->green=green;
       cluster->blue=blue;
-      cluster->next=(Cluster *) NULL;
       head=cluster;
     }
   /*
@@ -376,10 +372,10 @@ static MagickBooleanType Classify(Image *image,short **extrema,
   image_view=AcquireVirtualCacheView(image,exception);
   for (y=0; y < (ssize_t) image->rows; y++)
   {
-    register const Quantum
+    const Quantum
       *p;
 
-    register ssize_t
+    ssize_t
       x;
 
     p=GetCacheViewVirtualPixels(image_view,0,y,image->columns,1,exception);
@@ -556,13 +552,13 @@ static MagickBooleanType Classify(Image *image,short **extrema,
     Cluster
       *cluster;
 
-    register const PixelInfo
+    const PixelInfo
       *magick_restrict p;
 
-    register ssize_t
+    ssize_t
       x;
 
-    register Quantum
+    Quantum
       *magick_restrict q;
 
     if (status == MagickFalse)
@@ -607,7 +603,7 @@ static MagickBooleanType Classify(Image *image,short **extrema,
             ratio,
             sum;
 
-          register ssize_t
+          ssize_t
             j,
             k;
 
@@ -708,7 +704,7 @@ static MagickBooleanType Classify(Image *image,short **extrema,
 static void ConsolidateCrossings(ZeroCrossing *zero_crossing,
   const size_t number_crossings)
 {
-  register ssize_t
+  ssize_t
     i,
     j,
     k,
@@ -881,7 +877,7 @@ static ssize_t DefineRegion(const short *extrema,ExtentPacket *extents)
 static void DerivativeHistogram(const double *histogram,
   double *derivative)
 {
-  register ssize_t
+  ssize_t
     i,
     n;
 
@@ -958,10 +954,10 @@ MagickExport MagickBooleanType GetImageDynamicThreshold(const Image *image,
   double
     threshold;
 
-  register const Quantum
+  const Quantum
     *p;
 
-  register ssize_t
+  ssize_t
     i,
     x;
 
@@ -1227,10 +1223,10 @@ MagickExport MagickBooleanType GetImageDynamicThreshold(const Image *image,
 static void InitializeHistogram(const Image *image,ssize_t **histogram,
   ExceptionInfo *exception)
 {
-  register const Quantum
+  const Quantum
     *p;
 
-  register ssize_t
+  ssize_t
     i,
     x;
 
@@ -1302,7 +1298,7 @@ static void InitializeList(IntervalTree **list,ssize_t *number_nodes,
 
 static void MeanStability(IntervalTree *node)
 {
-  register IntervalTree
+  IntervalTree
     *child;
 
   if (node == (IntervalTree *) NULL)
@@ -1311,10 +1307,10 @@ static void MeanStability(IntervalTree *node)
   child=node->child;
   if (child != (IntervalTree *) NULL)
     {
-      register ssize_t
+      ssize_t
         count;
 
-      register double
+      double
         sum;
 
       sum=0.0;
@@ -1351,7 +1347,7 @@ static IntervalTree *InitializeIntervalTree(const ZeroCrossing *zero_crossing,
     *node,
     *root;
 
-  register ssize_t
+  ssize_t
     i;
 
   ssize_t
@@ -1512,6 +1508,13 @@ static double OptimalTau(const ssize_t *histogram,const double max_tau,
   const double min_tau,const double delta_tau,const double smooth_threshold,
   short *extrema)
 {
+  double
+    average_tau,
+    *derivative,
+    *second_derivative,
+    tau,
+    value;
+
   IntervalTree
     **list,
     *node,
@@ -1520,14 +1523,7 @@ static double OptimalTau(const ssize_t *histogram,const double max_tau,
   MagickBooleanType
     peak;
 
-  double
-    average_tau,
-    *derivative,
-    *second_derivative,
-    tau,
-    value;
-
-  register ssize_t
+  ssize_t
     i,
     x;
 
@@ -1726,14 +1722,13 @@ static void ScaleSpace(const ssize_t *histogram,const double tau,
     *gamma,
     sum;
 
-  register ssize_t
+  ssize_t
     u,
     x;
 
   gamma=(double *) AcquireQuantumMemory(256,sizeof(*gamma));
   if (gamma == (double *) NULL)
-    ThrowFatalException(ResourceLimitFatalError,
-      "UnableToAllocateGammaMap");
+    ThrowFatalException(ResourceLimitFatalError,"UnableToAllocateGammaMap");
   alpha=PerceptibleReciprocal(tau*sqrt(2.0*MagickPI));
   beta=(-1.0*PerceptibleReciprocal(2.0*tau*tau));
   for (x=0; x <= 255; x++)
@@ -1807,7 +1802,7 @@ MagickExport MagickBooleanType SegmentImage(Image *image,
   MagickBooleanType
     status;
 
-  register ssize_t
+  ssize_t
     i;
 
   short
@@ -1844,12 +1839,12 @@ MagickExport MagickBooleanType SegmentImage(Image *image,
   previous_colorspace=image->colorspace;
   (void) TransformImageColorspace(image,colorspace,exception);
   InitializeHistogram(image,histogram,exception);
-  (void) OptimalTau(histogram[Red],Tau,0.2,DeltaTau,
-    smooth_threshold == 0.0 ? 1.0 : smooth_threshold,extrema[Red]);
-  (void) OptimalTau(histogram[Green],Tau,0.2,DeltaTau,
-    smooth_threshold == 0.0 ? 1.0 : smooth_threshold,extrema[Green]);
-  (void) OptimalTau(histogram[Blue],Tau,0.2,DeltaTau,
-    smooth_threshold == 0.0 ? 1.0 : smooth_threshold,extrema[Blue]);
+  (void) OptimalTau(histogram[Red],Tau,0.2,DeltaTau,smooth_threshold == 0.0 ?
+    1.0 : smooth_threshold,extrema[Red]);
+  (void) OptimalTau(histogram[Green],Tau,0.2,DeltaTau,smooth_threshold == 0.0 ?
+    1.0 : smooth_threshold,extrema[Green]);
+  (void) OptimalTau(histogram[Blue],Tau,0.2,DeltaTau,smooth_threshold == 0.0 ?
+    1.0 : smooth_threshold,extrema[Blue]);
   /*
     Classify using the fuzzy c-Means technique.
   */
@@ -1900,7 +1895,7 @@ MagickExport MagickBooleanType SegmentImage(Image *image,
 static void ZeroCrossHistogram(double *second_derivative,
   const double smooth_threshold,short *crossings)
 {
-  register ssize_t
+  ssize_t
     i;
 
   ssize_t

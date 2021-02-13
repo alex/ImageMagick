@@ -17,7 +17,7 @@
 %                               September 2011                                %
 %                                                                             %
 %                                                                             %
-%  Copyright 1999-2020 ImageMagick Studio LLC, a non-profit organization      %
+%  Copyright 1999-2021 ImageMagick Studio LLC, a non-profit organization      %
 %  dedicated to making software imaging solutions freely available.           %
 %                                                                             %
 %  You may not use this file except in compliance with the License.  You may  %
@@ -104,7 +104,7 @@ static MagickBooleanType MonitorProgress(const char *text,
   const char
     *locale_message;
 
-  register char
+  char
     *p;
 
   magick_unreferenced(client_data);
@@ -201,7 +201,7 @@ static Image *SparseColorOption(const Image *image,
   MagickBooleanType
     error;
 
-  register size_t
+  size_t
     x;
 
   size_t
@@ -2155,7 +2155,7 @@ static MagickBooleanType CLISimpleOperatorImage(MagickCLI *cli_wand,
           KernelInfo
             *kernel_info;
 
-          register ssize_t
+          ssize_t
             j;
 
           kernel_info=AcquireKernelInfo(arg1,exception);
@@ -3429,17 +3429,22 @@ static MagickBooleanType CLISimpleOperatorImage(MagickCLI *cli_wand,
           if (IsGeometry(arg1) == MagickFalse)
             CLIWandExceptArgBreak(OptionError,"InvalidArgument",option,arg1);
           (void) SolarizeImage(_image,StringToDoubleInterval(arg1,(double)
-                 QuantumRange+1.0),_exception);
+             QuantumRange+1.0),_exception);
+          break;
+        }
+      if (LocaleCompare("sort-pixels",option+1) == 0)
+        {
+          (void) SortImagePixels(_image,_exception);
           break;
         }
       if (LocaleCompare("sparse-color",option+1) == 0)
         {
-          parse= ParseCommandOption(MagickSparseColorOptions,MagickFalse,arg1);
-          if ( parse < 0 )
+          parse=ParseCommandOption(MagickSparseColorOptions,MagickFalse,arg1);
+          if (parse < 0)
             CLIWandExceptArgBreak(OptionError,"UnrecognizedSparseColorMethod",
-                option,arg1);
+              option,arg1);
           new_image=SparseColorOption(_image,(SparseColorMethod)parse,arg2,
-               _exception);
+            _exception);
           break;
         }
       if (LocaleCompare("splice",option+1) == 0)
@@ -4137,7 +4142,9 @@ WandPrivate MagickBooleanType CLIListOperatorImages(MagickCLI *cli_wand,
         }
       if (LocaleCompare("duplicate",option+1) == 0)
         {
-          if (IfNormalOp)
+          if (!IfNormalOp)
+            new_images=DuplicateImages(_images,1,"-1",_exception);
+          else
             {
               const char
                 *p;
@@ -4147,18 +4154,16 @@ WandPrivate MagickBooleanType CLIListOperatorImages(MagickCLI *cli_wand,
 
               if (IsGeometry(arg1) == MagickFalse)
                 CLIWandExceptArgBreak(OptionError,"InvalidArgument",option,
-                      arg1);
+                  arg1);
               number_duplicates=(size_t) StringToLong(arg1);
               p=strchr(arg1,',');
               if (p == (const char *) NULL)
                 new_images=DuplicateImages(_images,number_duplicates,"-1",
                   _exception);
               else
-                new_images=DuplicateImages(_images,number_duplicates,p,
+                new_images=DuplicateImages(_images,number_duplicates,p+1,
                   _exception);
             }
-          else
-            new_images=DuplicateImages(_images,1,"-1",_exception);
           AppendImageToList(&_images, new_images);
           new_images=(Image *) NULL;
           break;

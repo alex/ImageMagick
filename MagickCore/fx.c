@@ -18,7 +18,7 @@
 %                                                                             %
 %                                                                             %
 %                                                                             %
-%  Copyright 1999-2020 ImageMagick Studio LLC, a non-profit organization      %
+%  Copyright 1999-2021 ImageMagick Studio LLC, a non-profit organization      %
 %  dedicated to making software imaging solutions freely available.           %
 %                                                                             %
 %  You may not use this file except in compliance with the License.  You may  %
@@ -93,6 +93,7 @@
 #include "MagickCore/string-private.h"
 #include "MagickCore/thread-private.h"
 #include "MagickCore/threshold.h"
+#include "MagickCore/token.h"
 #include "MagickCore/transform.h"
 #include "MagickCore/transform-private.h"
 #include "MagickCore/utility.h"
@@ -186,7 +187,7 @@ MagickPrivate FxInfo *AcquireFxInfo(const Image *images,const char *expression,
   FxInfo
     *fx_info;
 
-  register ssize_t
+  ssize_t
     i;
 
   unsigned char
@@ -295,7 +296,7 @@ MagickPrivate FxInfo *AcquireFxInfo(const Image *images,const char *expression,
 */
 MagickPrivate FxInfo *DestroyFxInfo(FxInfo *fx_info)
 {
-  register ssize_t
+  ssize_t
     i;
 
   fx_info->exception=DestroyExceptionInfo(fx_info->exception);
@@ -392,7 +393,7 @@ static double FxChannelStatistics(FxInfo *fx_info,Image *image,
   double
     statistic;
 
-  register const char
+  const char
     *p;
 
   channel_mask=UndefinedChannel;
@@ -507,7 +508,7 @@ static inline MagickBooleanType IsFxFunction(const char *expression,
   int
     c;
 
-  register size_t
+  size_t
     i;
 
   for (i=0; i <= length; i++)
@@ -515,7 +516,7 @@ static inline MagickBooleanType IsFxFunction(const char *expression,
       return(MagickFalse);
   c=expression[length];
   if ((LocaleNCompare(expression,name,length) == 0) &&
-      ((isspace(c) == 0) || (c == '(')))
+      ((isspace((int) ((unsigned char) c)) == 0) || (c == '(')))
     return(MagickTrue);
   return(MagickFalse);
 }
@@ -535,7 +536,7 @@ static inline const char *FxSubexpression(const char *expression,
   const char
     *subexpression;
 
-  register ssize_t
+  ssize_t
     level;
 
   level=0;
@@ -587,7 +588,7 @@ static double FxGetSymbol(FxInfo *fx_info,const PixelChannel channel,
   PointInfo
     point;
 
-  register ssize_t
+  ssize_t
     i;
 
   size_t
@@ -1200,10 +1201,10 @@ static const char *FxOperatorPrecedence(const char *expression,
     precedence,
     target;
 
-  register const char
+  const char
     *subexpression;
 
-  register int
+  int
     c;
 
   size_t
@@ -1257,7 +1258,7 @@ static const char *FxOperatorPrecedence(const char *expression,
       case 'E':
       case 'e':
       {
-        if ((isdigit(c) != 0) &&
+        if ((isdigit((int) ((unsigned char) c)) != 0) &&
             ((LocaleNCompare(expression,"E+",2) == 0) ||
              (LocaleNCompare(expression,"E-",2) == 0)))
           {
@@ -1307,11 +1308,11 @@ static const char *FxOperatorPrecedence(const char *expression,
         }
         default:
         {
-          if (((c != 0) && ((isdigit(c) != 0) ||
+          if (((c != 0) && ((isdigit((int) ((unsigned char) c)) != 0) ||
                (strchr(")",c) != (char *) NULL))) &&
               (((islower((int) ((unsigned char) *expression)) != 0) ||
                (strchr("(",(int) ((unsigned char) *expression)) != (char *) NULL)) ||
-               ((isdigit(c) == 0) &&
+               ((isdigit((int) ((unsigned char) c)) == 0) &&
                 (isdigit((int) ((unsigned char) *expression)) != 0))) &&
               (strchr("xy",(int) ((unsigned char) *expression)) == (char *) NULL))
             precedence=MultiplyPrecedence;
@@ -1328,7 +1329,7 @@ static const char *FxOperatorPrecedence(const char *expression,
         case '-':
         {
           if ((strchr("(+-/*%:&^|<>~,",c) == (char *) NULL) ||
-              (isalpha(c) != 0))
+              (isalpha((int) ((unsigned char) c)) != 0))
             precedence=AdditionPrecedence;
           break;
         }
@@ -1487,7 +1488,7 @@ static double FxEvaluateSubexpression(FxInfo *fx_info,
     sans,
     value;
 
-  register const char
+  const char
     *p;
 
   *beta=0.0;
@@ -2324,6 +2325,9 @@ static double FxEvaluateSubexpression(FxInfo *fx_info,
           size_t
             length;
 
+          /*
+            Parse if(condition test, true-expression, false-expression).
+          */
           length=CopyMagickString(subexpression,expression+3,
             MagickPathExtent-1);
           if (length != 0)
@@ -2739,7 +2743,7 @@ MagickPrivate MagickBooleanType FxEvaluateChannelExpression(FxInfo *fx_info,
 
 static FxInfo **DestroyFxThreadSet(FxInfo **fx_info)
 {
-  register ssize_t
+  ssize_t
     i;
 
   assert(fx_info != (FxInfo **) NULL);
@@ -2762,7 +2766,7 @@ static FxInfo **AcquireFxThreadSet(const Image *image,const char *expression,
   FxInfo
     **fx_info;
 
-  register ssize_t
+  ssize_t
     i;
 
   size_t
@@ -2853,20 +2857,21 @@ MagickExport Image *FxImage(const Image *image,const char *expression,
   fx_view=AcquireAuthenticCacheView(fx_image,exception);
 #if defined(MAGICKCORE_OPENMP_SUPPORT)
   #pragma omp parallel for schedule(dynamic) shared(progress,status) \
-    magick_number_threads(image,fx_image,fx_image->rows,1)
+    magick_number_threads(image,fx_image,fx_image->rows, \
+      GlobExpression(fx_info[0]->expression,"debug(",MagickTrue) == 0 ? 1 : 0)
 #endif
   for (y=0; y < (ssize_t) fx_image->rows; y++)
   {
     const int
       id = GetOpenMPThreadId();
 
-    register const Quantum
+    const Quantum
       *magick_restrict p;
 
-    register Quantum
+    Quantum
       *magick_restrict q;
 
-    register ssize_t
+    ssize_t
       x;
 
     if (status == MagickFalse)
@@ -2880,7 +2885,7 @@ MagickExport Image *FxImage(const Image *image,const char *expression,
       }
     for (x=0; x < (ssize_t) fx_image->columns; x++)
     {
-      register ssize_t
+      ssize_t
         i;
 
       for (i=0; i < (ssize_t) GetPixelChannels(image); i++)

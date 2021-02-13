@@ -17,7 +17,7 @@
 %                                 July 2003                                   %
 %                                                                             %
 %                                                                             %
-%  Copyright 1999-2020 ImageMagick Studio LLC, a non-profit organization      %
+%  Copyright 1999-2021 ImageMagick Studio LLC, a non-profit organization      %
 %  dedicated to making software imaging solutions freely available.           %
 %                                                                             %
 %  You may not use this file except in compliance with the License.  You may  %
@@ -169,7 +169,7 @@ static locale_t AcquireCLocale(void)
 
 static void *DestroyLocaleNode(void *locale_info)
 {
-  register LocaleInfo
+  LocaleInfo
     *p;
 
   p=(LocaleInfo *) locale_info;
@@ -584,10 +584,10 @@ MagickExport const LocaleInfo **GetLocaleInfoList(const char *pattern,
   const LocaleInfo
     **messages;
 
-  register const LocaleInfo
+  const LocaleInfo
     *p;
 
-  register ssize_t
+  ssize_t
     i;
 
   /*
@@ -660,7 +660,7 @@ extern "C" {
 
 static int LocaleTagCompare(const void *x,const void *y)
 {
-  register char
+  char
     **p,
     **q;
 
@@ -679,10 +679,10 @@ MagickExport char **GetLocaleList(const char *pattern,size_t *number_messages,
   char
     **messages;
 
-  register const LocaleInfo
+  const LocaleInfo
     *p;
 
-  register ssize_t
+  ssize_t
     i;
 
   /*
@@ -914,7 +914,7 @@ static MagickBooleanType IsLocaleTreeInstantiated(ExceptionInfo *exception)
           char
             *locale;
 
-          register const char
+          const char
             *p;
 
           locale=(char *) NULL;
@@ -1032,7 +1032,7 @@ MagickExport MagickBooleanType ListLocaleInfo(FILE *file,
   const LocaleInfo
     **locale_info;
 
-  register ssize_t
+  ssize_t
     i;
 
   size_t
@@ -1104,7 +1104,7 @@ MagickExport MagickBooleanType ListLocaleInfo(FILE *file,
 
 static void ChopLocaleComponents(char *path,const size_t components)
 {
-  register char
+  char
     *p;
 
   ssize_t
@@ -1162,7 +1162,7 @@ static MagickBooleanType LoadLocaleCache(SplayTreeInfo *cache,const char *xml,
   MagickStatusType
     status;
 
-  register char
+  char
     *p;
 
   size_t
@@ -1411,7 +1411,7 @@ MagickExport int LocaleCompare(const char *p,const char *q)
   if (q == (char *) NULL)
     return(1);
   {
-    register const unsigned char
+    const unsigned char
       *r = (const unsigned char *) p,
       *s = (const unsigned char *) q;
 
@@ -1446,7 +1446,7 @@ MagickExport int LocaleCompare(const char *p,const char *q)
 */
 MagickExport void LocaleLower(char *string)
 {
-  register char
+  char
     *q;
 
   assert(string != (char *) NULL);
@@ -1482,9 +1482,9 @@ MagickExport int LocaleLowercase(const int c)
     return(c);
 #if defined(MAGICKCORE_LOCALE_SUPPORT)
   if (c_locale != (locale_t) NULL)
-    return(tolower_l(c,c_locale));
+    return(tolower_l((int) ((unsigned char) c),c_locale));
 #endif
-  return(tolower(c));
+  return(tolower((int) ((unsigned char) c)));
 }
 
 /*
@@ -1537,11 +1537,11 @@ MagickExport int LocaleNCompare(const char *p,const char *q,const size_t length)
   if (length == 0)
     return(0);
   {
-    register const unsigned char
+    const unsigned char
       *s = (const unsigned char *) p,
       *t = (const unsigned char *) q;
 
-    register size_t
+    size_t
       n = length;
 
     for (n--; (*s != '\0') && (*t != '\0') && (n != 0) && ((*s == *t) ||
@@ -1575,7 +1575,7 @@ MagickExport int LocaleNCompare(const char *p,const char *q,const size_t length)
 */
 MagickExport void LocaleUpper(char *string)
 {
-  register char
+  char
     *q;
 
   assert(string != (char *) NULL);

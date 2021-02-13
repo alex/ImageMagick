@@ -17,7 +17,7 @@
 %                               September 2002                                %
 %                                                                             %
 %                                                                             %
-%  Copyright 1999-2020 ImageMagick Studio LLC, a non-profit organization      %
+%  Copyright 1999-2021 ImageMagick Studio LLC, a non-profit organization      %
 %  dedicated to making software imaging solutions freely available.           %
 %                                                                             %
 %  You may not use this file except in compliance with the License.  You may  %
@@ -205,6 +205,9 @@ MagickExport const char *GetMagickDelegates(void)
 #endif
 #if defined(MAGICKCORE_XML_DELEGATE)
   "xml "
+#endif
+#if defined(MAGICKCORE_ZIP_DELEGATE)
+  "zip "
 #endif
 #if defined(MAGICKCORE_ZLIB_DELEGATE)
   "zlib"
@@ -498,7 +501,7 @@ MagickExport const char *GetMagickReleaseDate(void)
 
 static unsigned int CRC32(const unsigned char *message,const size_t length)
 {
-  register ssize_t
+  ssize_t
     i;
 
   static MagickBooleanType
@@ -515,7 +518,7 @@ static unsigned int CRC32(const unsigned char *message,const size_t length)
   */
   if (crc_initial == MagickFalse)
     {
-      register unsigned int
+      unsigned int
         j;
 
       unsigned int
@@ -523,7 +526,7 @@ static unsigned int CRC32(const unsigned char *message,const size_t length)
 
       for (j=0; j < 256; j++)
       {
-        register ssize_t
+        ssize_t
           k;
 
         alpha=j;
@@ -541,7 +544,7 @@ static unsigned int CRC32(const unsigned char *message,const size_t length)
 
 MagickExport unsigned int GetMagickSignature(const StringInfo *nonce)
 {
-  register unsigned char
+  unsigned char
     *p;
 
   StringInfo

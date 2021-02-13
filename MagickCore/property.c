@@ -17,7 +17,7 @@
 %                                 March 2000                                  %
 %                                                                             %
 %                                                                             %
-%  Copyright 1999-2020 ImageMagick Studio LLC, a non-profit organization      %
+%  Copyright 1999-2021 ImageMagick Studio LLC, a non-profit organization      %
 %  dedicated to making software imaging solutions freely available.           %
 %                                                                             %
 %  You may not use this file except in compliance with the License.  You may  %
@@ -236,7 +236,7 @@ MagickExport MagickBooleanType DefineImageProperty(Image *image,
     key[MagickPathExtent],
     value[MagickPathExtent];
 
-  register char
+  char
     *p;
 
   assert(image != (Image *) NULL);
@@ -434,7 +434,7 @@ static MagickBooleanType GetIPTCProperty(const Image *image,const char *key,
     dataset,
     record;
 
-  register ssize_t
+  ssize_t
     i;
 
   size_t
@@ -513,7 +513,7 @@ static inline signed int ReadPropertyMSBLong(const unsigned char **p,
   int
     c;
 
-  register ssize_t
+  ssize_t
     i;
 
   unsigned char
@@ -553,7 +553,7 @@ static inline signed short ReadPropertyMSBShort(const unsigned char **p,
   int
     c;
 
-  register ssize_t
+  ssize_t
     i;
 
   unsigned char
@@ -598,7 +598,7 @@ static MagickBooleanType Get8BIMProperty(const Image *image,const char *key,
   MagickBooleanType
     status;
 
-  register ssize_t
+  ssize_t
     i;
 
   size_t
@@ -1239,7 +1239,7 @@ static MagickBooleanType GetEXIFProperty(const Image *image,
   MagickBooleanType
     status;
 
-  register ssize_t
+  ssize_t
     i;
 
   size_t
@@ -1423,7 +1423,7 @@ static MagickBooleanType GetEXIFProperty(const Image *image,
     number_entries=(size_t) ReadPropertyUnsignedShort(endian,directory);
     for ( ; entry < number_entries; entry++)
     {
-      register unsigned char
+      unsigned char
         *p,
         *q;
 
@@ -1680,7 +1680,6 @@ static MagickBooleanType GetICCProperty(const Image *image,const char *property,
     *profile;
 
   magick_unreferenced(property);
-
   profile=GetImageProfile(image,"icc");
   if (profile == (StringInfo *) NULL)
     profile=GetImageProfile(image,"icm");
@@ -1785,7 +1784,7 @@ static MagickBooleanType GetXMPProperty(const Image *image,const char *property)
   MagickBooleanType
     status;
 
-  register const char
+  const char
     *p;
 
   XMLTreeInfo
@@ -1875,7 +1874,7 @@ static char *TracePSClippath(const unsigned char *blob,size_t length)
     last[3],
     point[3];
 
-  register ssize_t
+  ssize_t
     i,
     x;
 
@@ -1964,8 +1963,8 @@ static char *TracePSClippath(const unsigned char *blob,size_t length)
         {
           y=(ssize_t) ReadPropertyMSBLong(&blob,&length);
           x=(ssize_t) ReadPropertyMSBLong(&blob,&length);
-          point[i].x=(double) x/4096/4096;
-          point[i].y=1.0-(double) y/4096/4096;
+          point[i].x=(double) x/4096.0/4096.0;
+          point[i].y=1.0-(double) y/4096.0/4096.0;
         }
         if (in_subpath == MagickFalse)
           {
@@ -2092,7 +2091,7 @@ static char *TraceSVGClippath(const unsigned char *blob,size_t length,
     last[3],
     point[3];
 
-  register ssize_t
+  ssize_t
     i;
 
   ssize_t
@@ -2162,8 +2161,8 @@ static char *TraceSVGClippath(const unsigned char *blob,size_t length,
         {
           y=(ssize_t) ReadPropertyMSBLong(&blob,&length);
           x=(ssize_t) ReadPropertyMSBLong(&blob,&length);
-          point[i].x=(double) x*columns/4096/4096;
-          point[i].y=(double) y*rows/4096/4096;
+          point[i].x=(double) x*columns/4096.0/4096.0;
+          point[i].y=(double) y*rows/4096.0/4096.0;
         }
         if (in_subpath == MagickFalse)
           {
@@ -2220,7 +2219,7 @@ MagickExport const char *GetImageProperty(const Image *image,
   MagickBooleanType
     read_from_properties;
 
-  register const char
+  const char
     *p;
 
   size_t
@@ -2616,14 +2615,18 @@ static const char *GetMagickPropertyLetter(ImageInfo *image_info,
     {
       WarnNoImageReturn("\"%%%c\"",letter);
       (void) FormatLocaleString(value,MagickPathExtent,"%.20g",
-        fabs(image->resolution.x) > MagickEpsilon ? image->resolution.x : 72.0);
+        fabs(image->resolution.x) > MagickEpsilon ? image->resolution.x :
+        image->units == PixelsPerCentimeterResolution ? DefaultResolution/2.54 :
+        DefaultResolution);
       break;
     }
     case 'y': /* Image vertical resolution (with units) */
     {
       WarnNoImageReturn("\"%%%c\"",letter);
       (void) FormatLocaleString(value,MagickPathExtent,"%.20g",
-        fabs(image->resolution.y) > MagickEpsilon ? image->resolution.y : 72.0);
+        fabs(image->resolution.y) > MagickEpsilon ? image->resolution.y :
+        image->units == PixelsPerCentimeterResolution ? DefaultResolution/2.54 :
+        DefaultResolution);
       break;
     }
     case 'z': /* Image depth as read in */
@@ -2923,7 +2926,7 @@ MagickExport const char *GetMagickProperty(ImageInfo *image_info,
           PointInfo
             *convex_hull;
 
-          register ssize_t
+          ssize_t
             n;
 
           size_t
@@ -3115,7 +3118,7 @@ MagickExport const char *GetMagickProperty(ImageInfo *image_info,
           PointInfo
             *bounding_box;
 
-          register ssize_t
+          ssize_t
             n;
 
           size_t
@@ -3587,10 +3590,10 @@ MagickExport char *InterpretImageProperties(ImageInfo *image_info,Image *image,
   MagickBooleanType
     number;
 
-  register char
+  char
     *q;  /* current position in interpret_text */
 
-  register const char
+  const char
     *p;  /* position in embed_text string being expanded */
 
   size_t
@@ -3771,7 +3774,7 @@ MagickExport char *InterpretImageProperties(ImageInfo *image_info,Image *image,
         *key,
         *string;
 
-      register ssize_t
+      ssize_t
         len;
 
       ssize_t

@@ -1,4 +1,4 @@
-#  Copyright 1999-2020 ImageMagick Studio LLC, a non-profit organization
+#  Copyright 1999-2021 ImageMagick Studio LLC, a non-profit organization
 #  dedicated to making software imaging solutions freely available.
 #
 #  You may not use this file except in compliance with the License.  You may
@@ -1075,7 +1075,7 @@ coders_mvg_la_LIBADD       = $(MAGICKCORE_LIBS) $(MATH_LIBS)
 coders_ora_la_SOURCES     = coders/ora.c
 coders_ora_la_CPPFLAGS    = $(MAGICK_CODER_CPPFLAGS)
 coders_ora_la_LDFLAGS     = $(MODULECOMMONFLAGS)
-coders_ora_la_LIBADD      = $(MAGICKCORE_LIBS) $(LIBZIP_LIBS)
+coders_ora_la_LIBADD      = $(MAGICKCORE_LIBS) $(ZIP_LIBS)
 
 # OTB coder module
 coders_otb_la_SOURCES      = coders/otb.c

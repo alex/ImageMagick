@@ -1,7 +1,7 @@
 # ImageMagick
 
-[![Build Status](https://travis-ci.org/ImageMagick/ImageMagick.svg?branch=master)](https://travis-ci.org/ImageMagick/ImageMagick)
-![master](https://github.com/ImageMagick/ImageMagick/workflows/master/badge.svg)
+[![Build Status](https://travis-ci.org/ImageMagick/ImageMagick.svg?branch=main)](https://travis-ci.org/ImageMagick/ImageMagick)
+![main](https://github.com/ImageMagick/ImageMagick/workflows/main/badge.svg)
 [![Fuzzing Status](https://oss-fuzz-build-logs.storage.googleapis.com/badges/imagemagick.svg)](https://bugs.chromium.org/p/oss-fuzz/issues/list?sort=-opened&can=1&q=proj:imagemagick)
 
 <p align="center">
@@ -20,7 +20,7 @@ ImageMagick is free software delivered as a ready-to-run binary distribution or 
 
 The ImageMagick development process ensures a stable API and ABI. Before each ImageMagick release, we perform a comprehensive security assessment that includes memory error and thread data race detection to prevent security vulnerabilities.
 
-The current release is the ImageMagick 7.0.10 series. It runs on Linux, Windows, Mac Os X, iOS, Android OS, and others.
+The current release is the ImageMagick 7.0.11 series. It runs on Linux, Windows, Mac Os X, iOS, Android OS, and others.
 
 The authoritative ImageMagick web site is https://imagemagick.org. The authoritative source code repository is https://github.com/ImageMagick/ImageMagick.
 

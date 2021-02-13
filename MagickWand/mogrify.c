@@ -17,7 +17,7 @@
 %                                March 2000                                   %
 %                                                                             %
 %                                                                             %
-%  Copyright 1999-2020 ImageMagick Studio LLC, a non-profit organization      %
+%  Copyright 1999-2021 ImageMagick Studio LLC, a non-profit organization      %
 %  dedicated to making software imaging solutions freely available.           %
 %                                                                             %
 %  You may not use this file except in compliance with the License.  You may  %
@@ -142,7 +142,7 @@ WandExport MagickBooleanType MagickCommandGenesis(ImageInfo *image_info,
     regard_warnings,
     status;
 
-  register ssize_t
+  ssize_t
     i;
 
   size_t
@@ -422,7 +422,7 @@ static MagickBooleanType MonitorProgress(const char *text,
   const char
     *locale_message;
 
-  register char
+  char
     *p;
 
   magick_unreferenced(client_data);
@@ -475,7 +475,7 @@ static Image *SparseColorOption(const Image *image,
   MagickBooleanType
     error;
 
-  register size_t
+  size_t
     x;
 
   size_t
@@ -744,7 +744,7 @@ WandExport MagickBooleanType MogrifyImage(ImageInfo *image_info,const int argc,
     geometry,
     region_geometry;
 
-  register ssize_t
+  ssize_t
     i;
 
   /*
@@ -1314,7 +1314,7 @@ WandExport MagickBooleanType MogrifyImage(ImageInfo *image_info,const int argc,
             KernelInfo
               *kernel_info;
 
-            register ssize_t
+            ssize_t
               j;
 
             size_t
@@ -1442,7 +1442,7 @@ WandExport MagickBooleanType MogrifyImage(ImageInfo *image_info,const int argc,
             double
               *arguments;
 
-            register ssize_t
+            ssize_t
               x;
 
             size_t
@@ -1762,7 +1762,7 @@ WandExport MagickBooleanType MogrifyImage(ImageInfo *image_info,const int argc,
             MagickFunction
               function;
 
-            register ssize_t
+            ssize_t
               x;
 
             size_t
@@ -3035,6 +3035,15 @@ WandExport MagickBooleanType MogrifyImage(ImageInfo *image_info,const int argc,
             (void) SolarizeImage(*image,threshold,exception);
             break;
           }
+        if (LocaleCompare("sort-pixels",option+1) == 0)
+          {
+            /*
+              Sort each scanline in scending order of intensity.
+            */
+            (void) SyncImageSettings(mogrify_info,*image,exception);
+            (void) SortImagePixels(*image,exception);
+            break;
+          }
         if (LocaleCompare("sparse-color",option+1) == 0)
           {
             SparseColorMethod
@@ -3699,6 +3708,7 @@ static MagickBooleanType MogrifyUsage(void)
       "                       shadows\n"
       "  -sketch geometry     simulate a pencil sketch\n"
       "  -solarize threshold  negate all pixels above the threshold level\n"
+      "  -sort-pixels         sort each scanline in ascending order of intensity\n"
       "  -sparse-color method args\n"
       "                       fill in a image based on a few color points\n"
       "  -splice geometry     splice the background color into the image\n"
@@ -3933,7 +3943,7 @@ WandExport MagickBooleanType MogrifyImageCommand(ImageInfo *image_info,
   MagickStatusType
     status;
 
-  register ssize_t
+  ssize_t
     i;
 
   ssize_t
@@ -4027,8 +4037,8 @@ WandExport MagickBooleanType MogrifyImageCommand(ImageInfo *image_info,
           continue;
         properties=(*GetBlobProperties(images));
         if (format != (char *) NULL)
-          (void) CopyMagickString(images->filename,images->magick_filename,
-            MagickPathExtent);
+          GetPathComponent(images->magick_filename,BasePathSansCompressExtension,
+            images->filename);
         if (path != (char *) NULL)
           {
             GetPathComponent(option,TailPath,filename);
@@ -6257,6 +6267,8 @@ WandExport MagickBooleanType MogrifyImageCommand(ImageInfo *image_info,
               ThrowMogrifyInvalidArgumentException(option,argv[i]);
             break;
           }
+        if (LocaleCompare("sort",option+1) == 0)
+          break;
         if (LocaleCompare("sparse-color",option+1) == 0)
           {
             ssize_t
@@ -6734,7 +6746,7 @@ WandExport MagickBooleanType MogrifyImageInfo(ImageInfo *image_info,
   ssize_t
     count;
 
-  register ssize_t
+  ssize_t
     i;
 
   /*
@@ -7846,7 +7858,7 @@ WandExport MagickBooleanType MogrifyImageList(ImageInfo *image_info,
   QuantizeInfo
     *quantize_info;
 
-  register ssize_t
+  ssize_t
     i;
 
   ssize_t
@@ -8285,8 +8297,8 @@ WandExport MagickBooleanType MogrifyImageList(ImageInfo *image_info,
                   duplicate_images=DuplicateImages(*images,number_duplicates,
                     "-1",exception);
                 else
-                  duplicate_images=DuplicateImages(*images,number_duplicates,p,
-                    exception);
+                  duplicate_images=DuplicateImages(*images,number_duplicates,
+                    p+1,exception);
               }
             AppendImageToList(images, duplicate_images);
             (void) SyncImagesSettings(mogrify_info,*images,exception);
@@ -8751,7 +8763,7 @@ WandExport MagickBooleanType MogrifyImageList(ImageInfo *image_info,
             Image
               *polynomial_image;
 
-            register ssize_t
+            ssize_t
               x;
 
             size_t
@@ -9062,7 +9074,7 @@ WandExport MagickBooleanType MogrifyImages(ImageInfo *image_info,
   size_t
     n;
 
-  register ssize_t
+  ssize_t
     i;
 
   assert(image_info != (ImageInfo *) NULL);

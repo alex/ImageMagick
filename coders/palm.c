@@ -191,7 +191,7 @@ static MagickBooleanType
 */
 static ssize_t FindColor(PixelInfo *packet)
 {
-  register ssize_t
+  ssize_t
     i;
 
   for (i=0; i < 256; i++)
@@ -248,11 +248,11 @@ static Image *ReadPALMImage(const ImageInfo *image_info,
   Quantum
     index;
 
-  register ssize_t
+  ssize_t
     i,
     x;
 
-  register Quantum
+  Quantum
     *q;
 
   size_t
@@ -708,13 +708,13 @@ static MagickBooleanType WritePALMImage(const ImageInfo *image_info,
   QuantizeInfo
     *quantize_info;
 
-  register ssize_t
+  ssize_t
     x;
 
-  register const Quantum
+  const Quantum
     *p;
 
-  register Quantum
+  Quantum
     *q;
 
   ssize_t
@@ -930,7 +930,7 @@ static MagickBooleanType WritePALMImage(const ImageInfo *image_info,
           for (x=0; x < (ssize_t) image->columns; x++)
           {
             if (bits_per_pixel >= 8)
-              color=(unsigned char) GetPixelIndex(image,p);
+              color=(unsigned char) ((ssize_t) GetPixelIndex(image,p));
             else
               color=(unsigned char) (GetPixelIndex(image,p)*
                 ((one << bits_per_pixel)-1)/MagickMax(1*image->colors-1,1));

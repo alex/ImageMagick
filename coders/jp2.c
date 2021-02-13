@@ -17,7 +17,7 @@
 %                                 June 2001                                   %
 %                                                                             %
 %                                                                             %
-%  Copyright 1999-2020 ImageMagick Studio LLC, a non-profit organization      %
+%  Copyright 1999-2021 ImageMagick Studio LLC, a non-profit organization      %
 %  dedicated to making software imaging solutions freely available.           %
 %                                                                             %
 %  You may not use this file except in compliance with the License.  You may  %
@@ -277,7 +277,7 @@ static Image *ReadJP2Image(const ImageInfo *image_info,ExceptionInfo *exception)
   opj_stream_t
     *jp2_stream;
 
-  register ssize_t
+  ssize_t
     i;
 
   ssize_t
@@ -456,10 +456,10 @@ static Image *ReadJP2Image(const ImageInfo *image_info,ExceptionInfo *exception)
     }
   for (y=0; y < (ssize_t) image->rows; y++)
   {
-    register Quantum
+    Quantum
       *magick_restrict q;
 
-    register ssize_t
+    ssize_t
       x;
 
     q=GetAuthenticPixels(image,0,y,image->columns,1,exception);
@@ -834,7 +834,7 @@ static MagickBooleanType WriteJP2Image(const ImageInfo *image_info,Image *image,
   opj_stream_t
     *jp2_stream;
 
-  register ssize_t
+  ssize_t
     i;
 
   ssize_t
@@ -907,7 +907,7 @@ static MagickBooleanType WriteJP2Image(const ImageInfo *image_info,Image *image,
   option=GetImageOption(image_info,"jp2:quality");
   if (option != (const char *) NULL)
     {
-      register const char
+      const char
         *p;
 
       /*
@@ -945,7 +945,7 @@ static MagickBooleanType WriteJP2Image(const ImageInfo *image_info,Image *image,
   option=GetImageOption(image_info,"jp2:rate");
   if (option != (const char *) NULL)
     {
-      register const char
+      const char
         *p;
 
       /*
@@ -1035,7 +1035,7 @@ static MagickBooleanType WriteJP2Image(const ImageInfo *image_info,Image *image,
   */
   for (y=0; y < (ssize_t) image->rows; y++)
   {
-    register const Quantum
+    const Quantum
       *p;
 
     ssize_t
@@ -1051,13 +1051,15 @@ static MagickBooleanType WriteJP2Image(const ImageInfo *image_info,Image *image,
         double
           scale;
 
-        register int
+        int
           *q;
 
         scale=(double) (((size_t) 1UL << jp2_image->comps[i].prec)-1)/
           QuantumRange;
-        q=jp2_image->comps[i].data+(y/jp2_image->comps[i].dy*
-          image->columns/jp2_image->comps[i].dx+x/jp2_image->comps[i].dx);
+        q=jp2_image->comps[i].data+(ssize_t) (y*PerceptibleReciprocal(
+          jp2_image->comps[i].dy)*image->columns*PerceptibleReciprocal(
+          jp2_image->comps[i].dx)+x*PerceptibleReciprocal(
+          jp2_image->comps[i].dx));
         switch (i)
         {
           case 0:

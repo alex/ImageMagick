@@ -14,7 +14,7 @@
 
 @SET_MAKE@
 
-#  Copyright 1999-2020 ImageMagick Studio LLC, a non-profit organization
+#  Copyright 1999-2021 ImageMagick Studio LLC, a non-profit organization
 #  dedicated to making software imaging solutions freely available.
 #
 #  You may not use this file except in compliance with the License.  You may
@@ -33,7 +33,7 @@
 #  Top-Level Makefile for building ImageMagick.
 #
 
-#  Copyright 1999-2020 ImageMagick Studio LLC, a non-profit organization
+#  Copyright 1999-2021 ImageMagick Studio LLC, a non-profit organization
 #  dedicated to making software imaging solutions freely available.
 #
 #  You may not use this file except in compliance with the License.  You may
@@ -49,7 +49,7 @@
 #
 #  Makefile for building ImageMagick m4 macros.
 
-#  Copyright 1999-2020 ImageMagick Studio LLC, a non-profit organization
+#  Copyright 1999-2021 ImageMagick Studio LLC, a non-profit organization
 #  dedicated to making software imaging solutions freely available.
 #
 #  You may not use this file except in compliance with the License.  You may
@@ -65,7 +65,7 @@
 #
 #  Makefile for Magick ImageMagick configuration files.
 
-#  Copyright 1999-2020 ImageMagick Studio LLC, a non-profit organization
+#  Copyright 1999-2021 ImageMagick Studio LLC, a non-profit organization
 #  dedicated to making software imaging solutions freely available.
 #
 #  You may not use this file except in compliance with the License.  You may
@@ -81,7 +81,7 @@
 #
 #  Makefile for building ImageMagick Coder library.
 
-#  Copyright 1999-2020 ImageMagick Studio LLC, a non-profit organization
+#  Copyright 1999-2021 ImageMagick Studio LLC, a non-profit organization
 #  dedicated to making software imaging solutions freely available.
 #
 #  You may not use this file except in compliance with the License.  You may
@@ -98,7 +98,7 @@
 #  Makefile for building the MagickCore API.
 #
 
-#  Copyright 1999-2020 ImageMagick Studio LLC, a non-profit organization
+#  Copyright 1999-2021 ImageMagick Studio LLC, a non-profit organization
 #  dedicated to making software imaging solutions freely available.
 #
 #  You may not use this file except in compliance with the License.  You may
@@ -123,7 +123,7 @@
 
 # AM_CPPFLAGS += -I$(top_srcdir)/Magick++/lib
 
-#  Copyright 1999-2020 ImageMagick Studio LLC, a non-profit organization
+#  Copyright 1999-2021 ImageMagick Studio LLC, a non-profit organization
 #  dedicated to making software imaging solutions freely available.
 #
 #  You may not use this file except in compliance with the License.  You may
@@ -139,7 +139,7 @@
 #
 #  Makefile for building ImageMagick filter modules.
 
-#  Copyright 1999-2020 ImageMagick Studio LLC, a non-profit organization
+#  Copyright 1999-2021 ImageMagick Studio LLC, a non-profit organization
 #  dedicated to making software imaging solutions freely available.
 #
 #  You may not use this file except in compliance with the License.  You may
@@ -155,7 +155,7 @@
 #
 #  Makefile for building ImageMagick utilities.
 
-#  Copyright 1999-2020 ImageMagick Studio LLC, a non-profit organization
+#  Copyright 1999-2021 ImageMagick Studio LLC, a non-profit organization
 #  dedicated to making software imaging solutions freely available.
 #
 #  You may not use this file except in compliance with the License.  You may
@@ -284,7 +284,7 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/ac_func_fseeko.m4 \
 	$(top_srcdir)/m4/libtool.m4 $(top_srcdir)/m4/ltoptions.m4 \
 	$(top_srcdir)/m4/ltsugar.m4 $(top_srcdir)/m4/ltversion.m4 \
 	$(top_srcdir)/m4/lt~obsolete.m4 $(top_srcdir)/m4/pkg.m4 \
-	$(top_srcdir)/configure.ac
+	$(top_srcdir)/m4/version.m4 $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 DIST_COMMON = $(srcdir)/Makefile.am $(top_srcdir)/configure \
@@ -1433,7 +1433,7 @@ coders_mvg_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(coders_mvg_la_LDFLAGS) $(LDFLAGS) -o $@
 @WITH_MODULES_TRUE@am_coders_mvg_la_rpath = -rpath $(codersdir)
-coders_ora_la_DEPENDENCIES = $(MAGICKCORE_LIBS)
+coders_ora_la_DEPENDENCIES = $(MAGICKCORE_LIBS) $(am__DEPENDENCIES_1)
 am_coders_ora_la_OBJECTS = coders/ora_la-ora.lo
 coders_ora_la_OBJECTS = $(am_coders_ora_la_OBJECTS)
 coders_ora_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
@@ -1904,7 +1904,7 @@ coders_xps_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(coders_xps_la_LDFLAGS) $(LDFLAGS) -o $@
 @WITH_MODULES_TRUE@am_coders_xps_la_rpath = -rpath $(codersdir)
-coders_xtrn_la_DEPENDENCIES = $(MAGICKCORE_LIBS) $(am__DEPENDENCIES_1)
+coders_xtrn_la_DEPENDENCIES = $(MAGICKCORE_LIBS)
 am_coders_xtrn_la_OBJECTS = coders/xtrn_la-xtrn.lo
 coders_xtrn_la_OBJECTS = $(am_coders_xtrn_la_OBJECTS)
 coders_xtrn_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
@@ -3088,8 +3088,8 @@ CFLAGS = @CFLAGS@
 CODER_DIRNAME = @CODER_DIRNAME@
 CODER_PATH = @CODER_PATH@
 CONFIGURE_ARGS = @CONFIGURE_ARGS@
+CONFIGURE_DEPENDENCIES = @CONFIGURE_DEPENDENCIES@
 CONFIGURE_PATH = @CONFIGURE_PATH@
-CONFIG_STATUS_DEPENDENCIES = @CONFIG_STATUS_DEPENDENCIES@
 CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
 CXX = @CXX@
@@ -3273,7 +3273,6 @@ NM = @NM@
 NMEDIT = @NMEDIT@
 OBJDUMP = @OBJDUMP@
 OBJEXT = @OBJEXT@
-OLE_LIBS = @OLE_LIBS@
 OPENEXR_CFLAGS = @OPENEXR_CFLAGS@
 OPENEXR_LIBS = @OPENEXR_LIBS@
 OPENMP_CFLAGS = @OPENMP_CFLAGS@
@@ -3283,13 +3282,12 @@ OTOOL = @OTOOL@
 OTOOL64 = @OTOOL64@
 P7ZIP = @P7ZIP@
 PACKAGE = @PACKAGE@
+PACKAGE_BASE_VERSION = @PACKAGE_BASE_VERSION@
 PACKAGE_BUGREPORT = @PACKAGE_BUGREPORT@
-PACKAGE_CHANGE_DATE = @PACKAGE_CHANGE_DATE@
 PACKAGE_LIB_VERSION = @PACKAGE_LIB_VERSION@
 PACKAGE_LIB_VERSION_NUMBER = @PACKAGE_LIB_VERSION_NUMBER@
 PACKAGE_NAME = @PACKAGE_NAME@
-PACKAGE_PERL_VERSION = @PACKAGE_PERL_VERSION@
-PACKAGE_RELEASE = @PACKAGE_RELEASE@
+PACKAGE_PATCHLEVEL_VERSION = @PACKAGE_PATCHLEVEL_VERSION@
 PACKAGE_RELEASE_DATE = @PACKAGE_RELEASE_DATE@
 PACKAGE_STRING = @PACKAGE_STRING@
 PACKAGE_TARNAME = @PACKAGE_TARNAME@
@@ -3367,7 +3365,6 @@ WEBP_CFLAGS = @WEBP_CFLAGS@
 WEBP_LIBS = @WEBP_LIBS@
 WMF_CFLAGS = @WMF_CFLAGS@
 WMF_LIBS = @WMF_LIBS@
-WS2_32_LIBS = @WS2_32_LIBS@
 WWWDecodeDelegate = @WWWDecodeDelegate@
 WebPDecodeDelegate = @WebPDecodeDelegate@
 WebPEncodeDelegate = @WebPEncodeDelegate@
@@ -3387,8 +3384,8 @@ X_EXTRA_LIBS = @X_EXTRA_LIBS@
 X_LIBS = @X_LIBS@
 X_PRE_LIBS = @X_PRE_LIBS@
 ZIP = @ZIP@
-ZIPLIB_CFLAGS = @ZIPLIB_CFLAGS@
-ZIPLIB_LIBS = @ZIPLIB_LIBS@
+ZIP_CFLAGS = @ZIP_CFLAGS@
+ZIP_LIBS = @ZIP_LIBS@
 ZLIB_CFLAGS = @ZLIB_CFLAGS@
 ZLIB_LIBS = @ZLIB_LIBS@
 ZSTD_CFLAGS = @ZSTD_CFLAGS@
@@ -3549,7 +3546,6 @@ TOP_EXTRA_DIST = \
   NEWS.txt \
   README.txt \
   index.html \
-  version.sh \
   winpath.sh
 
 
@@ -3595,7 +3591,8 @@ M4_EXTRA_DIST = \
   ltsugar.m4  \
   ltversion.m4  \
   magick_check_pthread_lib.m4  \
-  pkg.m4
+  pkg.m4 \
+  version.m4
 
 
 # Where architecture-independent configuration files get installed
@@ -4669,7 +4666,7 @@ coders_mvg_la_LIBADD = $(MAGICKCORE_LIBS) $(MATH_LIBS)
 coders_ora_la_SOURCES = coders/ora.c
 coders_ora_la_CPPFLAGS = $(MAGICK_CODER_CPPFLAGS)
 coders_ora_la_LDFLAGS = $(MODULECOMMONFLAGS)
-coders_ora_la_LIBADD = $(MAGICKCORE_LIBS) $(LIBZIP_LIBS)
+coders_ora_la_LIBADD = $(MAGICKCORE_LIBS) $(ZIP_LIBS)
 
 # OTB coder module
 coders_otb_la_SOURCES = coders/otb.c
@@ -5957,7 +5954,7 @@ filters_analyze_la_LIBADD = $(MAGICKCORE_LIBS) $(MATH_LIBS)
 UTILITIES_INSTALL_EXEC_LOCAL_TARGETS = install-exec-local-utilities
 UTILITIES_UNINSTALL_LOCAL_TARGETS = uninstall-local-utilities
 
-# Copyright 1999-2020 ImageMagick Studio LLC, a non-profit organization
+# Copyright 1999-2021 ImageMagick Studio LLC, a non-profit organization
 # dedicated to making software imaging solutions freely available.
 #
 # You may not use this file except in compliance with the License.
@@ -6080,9 +6077,9 @@ HTML_UNINSTALL_DATA_TARGETS = uninstall-data-html
 #
 # Build Windows source Zip and 7Zip balls
 #
-@ZIP_DELEGATE_TRUE@DIST_WINDOWS_SRC_ZIP = $(PACKAGE_NAME)-$(PACKAGE_VERSION)$(PACKAGE_VERSION_ADDENDUM)-windows.zip
+@ZIP_DELEGATE_TRUE@DIST_WINDOWS_SRC_ZIP = $(PACKAGE_NAME)-$(PACKAGE_VERSION)-windows.zip
 @P7ZIP_DELEGATE_FALSE@DIST_WINDOWS_SRC_7ZIP = 
-@P7ZIP_DELEGATE_TRUE@DIST_WINDOWS_SRC_7ZIP = $(PACKAGE_NAME)-$(PACKAGE_VERSION)$(PACKAGE_VERSION_ADDENDUM)-windows.7z
+@P7ZIP_DELEGATE_TRUE@DIST_WINDOWS_SRC_7ZIP = $(PACKAGE_NAME)-$(PACKAGE_VERSION)-windows.7z
 
 #
 # RPM build support
@@ -6092,11 +6089,11 @@ HTML_UNINSTALL_DATA_TARGETS = uninstall-data-html
 @RPM_DELEGATE_TRUE@RPMARCH = $(MAGICK_TARGET_CPU)
 @RPM_DELEGATE_FALSE@DIST_ARCHIVE_RPM = 
 @RPM_DELEGATE_TRUE@DIST_ARCHIVE_RPM = \
-@RPM_DELEGATE_TRUE@  $(RPMDIR)/$(RPMARCH)/$(PACKAGE_NAME)-$(PACKAGE_VERSION)$(PACKAGE_VERSION_ADDENDUM)-$(PACKAGE_RELEASE).$(RPMARCH).rpm \
-@RPM_DELEGATE_TRUE@  $(RPMDIR)/$(RPMARCH)/$(PACKAGE_NAME)-c++-$(PACKAGE_VERSION)$(PACKAGE_VERSION_ADDENDUM)-$(PACKAGE_RELEASE).$(RPMARCH).rpm \
-@RPM_DELEGATE_TRUE@  $(RPMDIR)/$(RPMARCH)/$(PACKAGE_NAME)-c++-devel-$(PACKAGE_VERSION)$(PACKAGE_VERSION_ADDENDUM)-$(PACKAGE_RELEASE).$(RPMARCH).rpm \
-@RPM_DELEGATE_TRUE@  $(RPMDIR)/$(RPMARCH)/$(PACKAGE_NAME)-devel-$(PACKAGE_VERSION)$(PACKAGE_VERSION_ADDENDUM)-$(PACKAGE_RELEASE).$(RPMARCH).rpm \
-@RPM_DELEGATE_TRUE@  $(RPMDIR)/$(RPMARCH)/$(PACKAGE_NAME)-perl-$(PACKAGE_VERSION)$(PACKAGE_VERSION_ADDENDUM)-$(PACKAGE_RELEASE).$(RPMARCH).rpm
+@RPM_DELEGATE_TRUE@  $(RPMDIR)/$(RPMARCH)/$(PACKAGE_NAME)-$(PACKAGE_VERSION)-$(PACKAGE_PATCHLEVEL_VERSION).$(RPMARCH).rpm \
+@RPM_DELEGATE_TRUE@  $(RPMDIR)/$(RPMARCH)/$(PACKAGE_NAME)-c++-$(PACKAGE_VERSION)-$(PACKAGE_PATCHLEVEL_VERSION).$(RPMARCH).rpm \
+@RPM_DELEGATE_TRUE@  $(RPMDIR)/$(RPMARCH)/$(PACKAGE_NAME)-c++-devel-$(PACKAGE_VERSION)-$(PACKAGE_PATCHLEVEL_VERSION).$(RPMARCH).rpm \
+@RPM_DELEGATE_TRUE@  $(RPMDIR)/$(RPMARCH)/$(PACKAGE_NAME)-devel-$(PACKAGE_VERSION)-$(PACKAGE_PATCHLEVEL_VERSION).$(RPMARCH).rpm \
+@RPM_DELEGATE_TRUE@  $(RPMDIR)/$(RPMARCH)/$(PACKAGE_NAME)-perl-$(PACKAGE_VERSION)-$(PACKAGE_PATCHLEVEL_VERSION).$(RPMARCH).rpm
 
 all: $(BUILT_SOURCES)
 	$(MAKE) $(AM_MAKEFLAGS) all-am
@@ -13733,7 +13730,7 @@ magick-version: MagickCore/version.h
 	fi ; \
 	touch magick-version
 
-MagickCore/version.h:	$(top_srcdir)/ChangeLog $(top_srcdir)/version.sh
+MagickCore/version.h:	$(top_srcdir)/ChangeLog $(top_srcdir)/m4/version.m4
 libtool: $(LIBTOOL_DEPS)
 	$(SHELL) ./config.status --recheck
 
@@ -13758,17 +13755,17 @@ html-local:
 	cd config && doxygen MagickWand.dox
 	cd config && doxygen Magick++.dox
 $(DIST_WINDOWS_SRC_ZIP) $(DIST_WINDOWS_SRC_7ZIP) windows-dist:
-	if test -d $(PACKAGE_NAME)-$(PACKAGE_VERSION)$(PACKAGE_VERSION_ADDENDUM) ; then \
-	  chmod -R u+w $(PACKAGE_NAME)-$(PACKAGE_VERSION)$(PACKAGE_VERSION_ADDENDUM) ; \
-	  rm -rf $(PACKAGE_NAME)-$(PACKAGE_VERSION)$(PACKAGE_VERSION_ADDENDUM) ; \
+	if test -d $(PACKAGE_NAME)-$(PACKAGE_VERSION) ; then \
+	  chmod -R u+w $(PACKAGE_NAME)-$(PACKAGE_VERSION) ; \
+	  rm -rf $(PACKAGE_NAME)-$(PACKAGE_VERSION) ; \
 	fi
-	git clone -b master https://github.com/ImageMagick/ImageMagick.git $(PACKAGE_NAME)-$(PACKAGE_VERSION)$(PACKAGE_VERSION_ADDENDUM)
+	git clone -b main https://github.com/ImageMagick/ImageMagick.git $(PACKAGE_NAME)-$(PACKAGE_VERSION)
 @ZIP_DELEGATE_TRUE@	rm -f $(DIST_WINDOWS_SRC_ZIP)
-@ZIP_DELEGATE_TRUE@	$(ZIP) -r -9 -q  $(DIST_WINDOWS_SRC_ZIP) $(PACKAGE_NAME)-$(PACKAGE_VERSION)$(PACKAGE_VERSION_ADDENDUM)
+@ZIP_DELEGATE_TRUE@	$(ZIP) -r -9 -q  $(DIST_WINDOWS_SRC_ZIP) $(PACKAGE_NAME)-$(PACKAGE_VERSION)
 @P7ZIP_DELEGATE_TRUE@	rm -f $(DIST_WINDOWS_SRC_7ZIP)
-@P7ZIP_DELEGATE_TRUE@	$(P7ZIP) a -t7z -mx=9 $(DIST_WINDOWS_SRC_7ZIP) $(PACKAGE_NAME)-$(PACKAGE_VERSION)$(PACKAGE_VERSION_ADDENDUM)
+@P7ZIP_DELEGATE_TRUE@	$(P7ZIP) a -t7z -mx=9 $(DIST_WINDOWS_SRC_7ZIP) $(PACKAGE_NAME)-$(PACKAGE_VERSION)
 @P7ZIP_DELEGATE_TRUE@	chmod 644 $(DIST_WINDOWS_SRC_7ZIP)
-	rm -rf $(PACKAGE_NAME)-$(PACKAGE_VERSION)$(PACKAGE_VERSION_ADDENDUM)
+	rm -rf $(PACKAGE_NAME)-$(PACKAGE_VERSION)
 @RPM_DELEGATE_TRUE@.PHONY: srpm
 @RPM_DELEGATE_TRUE@$(DIST_ARCHIVE_SRPM) srpm: dist-bzip2
 @RPM_DELEGATE_TRUE@	rm -f $(DIST_ARCHIVE_SRPM)

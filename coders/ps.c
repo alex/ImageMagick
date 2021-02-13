@@ -17,7 +17,7 @@
 %                                 July 1992                                   %
 %                                                                             %
 %                                                                             %
-%  Copyright 1999-2020 ImageMagick Studio LLC, a non-profit organization      %
+%  Copyright 1999-2021 ImageMagick Studio LLC, a non-profit organization      %
 %  dedicated to making software imaging solutions freely available.           %
 %                                                                             %
 %  You may not use this file except in compliance with the License.  You may  %
@@ -179,7 +179,7 @@ static inline int ProfileInteger(MagickByteBuffer *buffer,short int *hex_digits)
     l,
     value;
 
-  register ssize_t
+  ssize_t
     i;
 
   l=0;
@@ -235,10 +235,10 @@ static void ReadPSInfo(const ImageInfo *image_info,Image *image,
   MagickByteBuffer
     buffer;
 
-  register char
+  char
     *p;
 
-  register ssize_t
+  ssize_t
     i;
 
   SegmentInfo
@@ -385,7 +385,7 @@ static void ReadPSInfo(const ImageInfo *image_info,Image *image,
         i=0;
         for (c=ReadMagickByteBuffer(&buffer); c != EOF; c=ReadMagickByteBuffer(&buffer))
         {
-          if ((isspace(c) != 0) || ((i+1) == sizeof(name)))
+          if ((isspace((int) ((unsigned char) c)) != 0) || ((i+1) == sizeof(name)))
             break;
           name[i++]=(char) c;
         }
@@ -428,7 +428,7 @@ static void ReadPSInfo(const ImageInfo *image_info,Image *image,
     if ((ps_info->photoshop_profile == (StringInfo *) NULL) &&
         (CompareMagickByteBuffer(&buffer,PhotoshopProfile,strlen(PhotoshopProfile)) != MagickFalse))
       {
-        size_t
+        unsigned long
           extent;
 
         unsigned char
@@ -439,7 +439,7 @@ static void ReadPSInfo(const ImageInfo *image_info,Image *image,
         */
         p=GetMagickByteBufferDatum(&buffer);
         extent=0;
-        count=(ssize_t) sscanf(p,PhotoshopProfile " %zu",&extent);
+        count=(ssize_t) sscanf(p,PhotoshopProfile " %lu",&extent);
         if ((count != 1) || (extent == 0))
           continue;
         if ((MagickSizeType) extent > GetBlobSize(image))
@@ -574,7 +574,7 @@ static Image *ReadPSImage(const ImageInfo *image_info,ExceptionInfo *exception)
   RectangleInfo
     page;
 
-  register ssize_t
+  ssize_t
     i;
 
   ssize_t
@@ -1029,7 +1029,7 @@ ModuleExport void UnregisterPSImage(void)
 static inline unsigned char *PopHexPixel(const char hex_digits[][3],
   const size_t pixel,unsigned char *pixels)
 {
-  register const char
+  const char
     *hex;
 
   hex=hex_digits[pixel];
@@ -1381,14 +1381,14 @@ static MagickBooleanType WritePSImage(const ImageInfo *image_info,Image *image,
     media_info,
     page_info;
 
-  register const Quantum
+  const Quantum
     *p;
 
-  register ssize_t
+  ssize_t
     i,
     x;
 
-  register unsigned char
+  unsigned char
     *q;
 
   SegmentInfo
@@ -1592,7 +1592,7 @@ static MagickBooleanType WritePSImage(const ImageInfo *image_info,Image *image,
             Quantum
               pixel;
 
-            register ssize_t
+            ssize_t
               x;
 
             ssize_t

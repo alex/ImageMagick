@@ -16,7 +16,7 @@
 %                                 July 1992                                   %
 %                                                                             %
 %                                                                             %
-%  Copyright 1999-2020 ImageMagick Studio LLC, a non-profit organization      %
+%  Copyright 1999-2021 ImageMagick Studio LLC, a non-profit organization      %
 %  dedicated to making software imaging solutions freely available.           %
 %                                                                             %
 %  You may not use this file except in compliance with the License.  You may  %
@@ -176,7 +176,7 @@ static LinkedListInfo *AcquirePolicyCache(const char *filename,
   MagickStatusType
     status;
 
-  register ssize_t
+  ssize_t
     i;
 
   /*
@@ -215,7 +215,7 @@ static LinkedListInfo *AcquirePolicyCache(const char *filename,
     PolicyInfo
       *policy_info;
 
-    register const PolicyMapInfo
+    const PolicyMapInfo
       *p;
 
     p=PolicyMap+i;
@@ -277,10 +277,10 @@ static PolicyInfo *GetPolicyInfo(const char *name,ExceptionInfo *exception)
   PolicyDomain
     domain;
 
-  register PolicyInfo
+  PolicyInfo
     *p;
 
-  register char
+  char
     *q;
 
   assert(exception != (ExceptionInfo *) NULL);
@@ -371,10 +371,10 @@ MagickExport const PolicyInfo **GetPolicyInfoList(const char *pattern,
   const PolicyInfo
     **policies;
 
-  register const PolicyInfo
+  const PolicyInfo
     *p;
 
-  register ssize_t
+  ssize_t
     i;
 
   /*
@@ -451,7 +451,7 @@ static char *AcquirePolicyString(const char *source,const size_t pad)
     length+=strlen(source);
   destination=(char *) NULL;
   if (~length >= pad)
-    destination=(char *) AcquireMagickMemory((length+pad)*sizeof(*destination));
+    destination=(char *) AcquireQuantumMemory(length+pad,sizeof(*destination));
   if (destination == (char *) NULL)
     ThrowFatalException(ResourceLimitFatalError,"UnableToAcquireString");
   if (source != (char *) NULL)
@@ -466,10 +466,10 @@ MagickExport char **GetPolicyList(const char *pattern,size_t *number_policies,
   char
     **policies;
 
-  register const PolicyInfo
+  const PolicyInfo
     *p;
 
-  register ssize_t
+  ssize_t
     i;
 
   /*
@@ -628,7 +628,7 @@ MagickExport MagickBooleanType IsRightsAuthorized(const PolicyDomain domain,
   MagickBooleanType
     authorized;
 
-  register PolicyInfo
+  PolicyInfo
     *p;
 
   if (IsEventLogging() != MagickFalse)
@@ -700,7 +700,7 @@ MagickExport MagickBooleanType ListPolicyInfo(FILE *file,
   const PolicyInfo
     **policy_info;
 
-  register ssize_t
+  ssize_t
     i;
 
   size_t
@@ -1037,7 +1037,7 @@ MagickPrivate MagickBooleanType PolicyComponentGenesis(void)
 
 static void *DestroyPolicyElement(void *policy_info)
 {
-  register PolicyInfo
+  PolicyInfo
     *p;
 
   p=(PolicyInfo *) policy_info;
@@ -1162,7 +1162,7 @@ static MagickBooleanType SetPolicyValue(const PolicyDomain domain,
   MagickBooleanType
     status;
 
-  register PolicyInfo
+  PolicyInfo
     *p;
 
   status=MagickTrue;
@@ -1246,15 +1246,21 @@ MagickExport MagickBooleanType SetMagickSecurityPolicyValue(
     }
     case SystemPolicyDomain:
     {
+      if (LocaleCompare(name,"font") == 0)
+        return(SetPolicyValue(domain,name,value));
       if (LocaleCompare(name,"max-memory-request") == 0)
         {
           current_value=GetPolicyValue("system:max-memory-request");
           if ((current_value == (char *) NULL) ||
               (StringToSizeType(value,100.0) < StringToSizeType(current_value,100.0)))
             {
+              if (current_value != (char *) NULL)
+                current_value=DestroyString(current_value);
               ResetMaxMemoryRequest();
               return(SetPolicyValue(domain,name,value));
             }
+          if (current_value != (char *) NULL)
+            current_value=DestroyString(current_value);
         }
       if (LocaleCompare(name,"memory-map") == 0)
         {
@@ -1273,7 +1279,13 @@ MagickExport MagickBooleanType SetMagickSecurityPolicyValue(
           current_value=GetPolicyValue("system:shred");
           if ((current_value == (char *) NULL) ||
               (StringToInteger(value) > StringToInteger(current_value)))
-            return(SetPolicyValue(domain,name,value));
+            {
+              if (current_value != (char *) NULL)
+                current_value=DestroyString(current_value);
+              return(SetPolicyValue(domain,name,value));
+            }
+          if (current_value != (char *) NULL)
+            current_value=DestroyString(current_value);
         }
       break;
     }

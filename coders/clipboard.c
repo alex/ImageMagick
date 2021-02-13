@@ -17,7 +17,7 @@
 %                                 May 2002                                    %
 %                                                                             %
 %                                                                             %
-%  Copyright 1999-2020 ImageMagick Studio LLC, a non-profit organization      %
+%  Copyright 1999-2021 ImageMagick Studio LLC, a non-profit organization      %
 %  dedicated to making software imaging solutions freely available.           %
 %                                                                             %
 %  You may not use this file except in compliance with the License.  You may  %
@@ -122,21 +122,9 @@ static Image *ReadCLIPBOARDImage(const ImageInfo *image_info,
   LPVOID
     clip_mem;
 
-  MagickBooleanType
-    status;
-
-  register ssize_t
-    x;
-
-  register Quantum
-    *q;
-
   size_t
     clip_size,
     total_size;
-
-  ssize_t
-    y;
 
   unsigned char
     offset;

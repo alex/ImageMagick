@@ -17,7 +17,7 @@
 %                                 July 1992                                   %
 %                                                                             %
 %                                                                             %
-%  Copyright 1999-2020 ImageMagick Studio LLC, a non-profit organization      %
+%  Copyright 1999-2021 ImageMagick Studio LLC, a non-profit organization      %
 %  dedicated to making software imaging solutions freely available.           %
 %                                                                             %
 %  You may not use this file except in compliance with the License.  You may  %
@@ -249,7 +249,7 @@ MagickExport MagickBooleanType AnnotateImage(Image *image,
   RectangleInfo
     geometry;
 
-  register ssize_t
+  ssize_t
     i;
 
   TypeMetric
@@ -595,12 +595,12 @@ MagickExport ssize_t FormatMagickCaption(Image *image,DrawInfo *draw_info,
   MagickBooleanType
     status;
 
-  register char
+  char
     *p,
     *q,
     *s;
 
-  register ssize_t
+  ssize_t
     i;
 
   size_t
@@ -734,7 +734,7 @@ MagickExport MagickBooleanType GetMultilineTypeMetrics(Image *image,
   MagickSizeType
     size;
 
-  register ssize_t
+  ssize_t
     i;
 
   size_t
@@ -932,7 +932,7 @@ MagickExport MagickBooleanType GetTypeMetrics(Image *image,
 static MagickBooleanType RenderType(Image *image,const DrawInfo *draw_info,
   const PointInfo *offset,TypeMetric *metrics,ExceptionInfo *exception)
 {
-  const char
+  char
     *font;
 
   const TypeInfo
@@ -985,7 +985,7 @@ static MagickBooleanType RenderType(Image *image,const DrawInfo *draw_info,
           int
             number_families;
 
-          register ssize_t
+          ssize_t
             i;
 
           /*
@@ -1009,17 +1009,21 @@ static MagickBooleanType RenderType(Image *image,const DrawInfo *draw_info,
         }
     }
   font=GetPolicyValue("system:font");
-  if ((font != (const char *) NULL) && (IsPathAccessible(font) != MagickFalse))
+  if (font != (char *) NULL)
     {
-      /*
-        Render with default system font.
-      */
-      annotate_info=CloneDrawInfo((ImageInfo *) NULL,draw_info);
-      annotate_info->font=ConstantString(font);
-      status=RenderFreetype(image,annotate_info,annotate_info->encoding,offset,
-        metrics,exception);
-      annotate_info=DestroyDrawInfo(annotate_info);
-      return(status);
+      if (IsPathAccessible(font) != MagickFalse)
+        {
+          /*
+            Render with default system font.
+          */
+          annotate_info=CloneDrawInfo((ImageInfo *) NULL,draw_info);
+          annotate_info->font=font;
+          status=RenderFreetype(image,annotate_info,annotate_info->encoding,
+            offset,metrics,exception);
+          annotate_info=DestroyDrawInfo(annotate_info);
+          return(status);
+        }
+      font=DestroyString(font);
     }
   sans_exception=AcquireExceptionInfo();
   if (type_info == (const TypeInfo *) NULL)
@@ -1104,12 +1108,13 @@ static size_t ComplexTextLayout(const Image *image,const DrawInfo *draw_info,
   raqm_glyph_t
     *glyphs;
 
-  register ssize_t
+  ssize_t
     i;
 
   size_t
     extent;
 
+  magick_unreferenced(flags);
   extent=0;
   rq=raqm_create();
   if (rq == (raqm_t *) NULL)
@@ -1182,7 +1187,7 @@ cleanup:
   FT_Error
     ft_status;
 
-  register ssize_t
+  ssize_t
     i;
 
   ssize_t
@@ -1370,10 +1375,10 @@ static MagickBooleanType RenderFreetype(Image *image,const DrawInfo *draw_info,
     point,
     resolution;
 
-  register char
+  char
     *p;
 
-  register ssize_t
+  ssize_t
     i;
 
   size_t
@@ -1508,6 +1513,15 @@ static MagickBooleanType RenderFreetype(Image *image,const DrawInfo *draw_info,
   metrics->pixels_per_em.y=face->size->metrics.y_ppem;
   metrics->ascent=(double) face->size->metrics.ascender/64.0;
   metrics->descent=(double) face->size->metrics.descender/64.0;
+  if (face->size->metrics.ascender == 0)
+    {
+      /*
+        Sanitize buggy ascender and descender values.
+      */
+      metrics->ascent=face->size->metrics.y_ppem;
+      if (face->size->metrics.descender == 0)
+        metrics->descent=face->size->metrics.y_ppem/-3.5;
+    }
   metrics->width=0;
   metrics->origin.x=0;
   metrics->origin.y=0;
@@ -1586,8 +1600,6 @@ static MagickBooleanType RenderFreetype(Image *image,const DrawInfo *draw_info,
       if (image->alpha_trait == UndefinedPixelTrait)
         (void) SetImageAlphaChannel(image,OpaqueAlphaChannel,exception);
     }
-  point.x=0.0;
-  point.y=0.0;
   for (p=draw_info->text; GetUTFCode(p) != 0; p+=GetUTFOctets(p))
     if (GetUTFCode(p) < 0)
       break;
@@ -1667,7 +1679,7 @@ static MagickBooleanType RenderFreetype(Image *image,const DrawInfo *draw_info,
       }
     FT_Vector_Transform(&glyph.origin,&affine);
     (void) FT_Glyph_Transform(glyph.image,&affine,&glyph.origin);
-    ft_status=FT_Glyph_To_Bitmap(&glyph.image,ft_render_mode_normal,
+    ft_status=FT_Glyph_To_Bitmap(&glyph.image,FT_RENDER_MODE_NORMAL,
       (FT_Vector *) NULL,MagickTrue);
     if (ft_status != 0)
       continue;
@@ -1684,7 +1696,7 @@ static MagickBooleanType RenderFreetype(Image *image,const DrawInfo *draw_info,
         MagickBooleanType
           transparent_fill;
 
-        register unsigned char
+        unsigned char
           *r;
 
         /*
@@ -1709,10 +1721,10 @@ static MagickBooleanType RenderFreetype(Image *image,const DrawInfo *draw_info,
           PixelInfo
             fill_color;
 
-          register Quantum
+          Quantum
             *magick_restrict q;
 
-          register ssize_t
+          ssize_t
             x;
 
           ssize_t
@@ -1903,10 +1915,10 @@ static char *EscapeParenthesis(const char *source)
   char
     *destination;
 
-  register char
+  char
     *q;
 
-  register const char
+  const char
     *p;
 
   size_t
@@ -1971,7 +1983,7 @@ static MagickBooleanType RenderPostscript(Image *image,
     point,
     resolution;
 
-  register ssize_t
+  ssize_t
     i;
 
   size_t
@@ -2100,11 +2112,11 @@ static MagickBooleanType RenderPostscript(Image *image,
   metrics->pixels_per_em.x=(resolution.y/DefaultResolution)*
     ExpandAffine(&draw_info->affine)*draw_info->pointsize;
   metrics->pixels_per_em.y=metrics->pixels_per_em.x;
-  metrics->ascent=metrics->pixels_per_em.x;
+  metrics->ascent=metrics->pixels_per_em.y;
   metrics->descent=metrics->pixels_per_em.y/-5.0;
   metrics->width=(double) annotate_image->columns/
     ExpandAffine(&draw_info->affine);
-  metrics->height=1.152*metrics->pixels_per_em.x;
+  metrics->height=floor(metrics->ascent-metrics->descent+0.5);
   metrics->max_advance=metrics->pixels_per_em.x;
   metrics->bounds.x1=0.0;
   metrics->bounds.y1=metrics->descent;
@@ -2140,10 +2152,10 @@ static MagickBooleanType RenderPostscript(Image *image,
       annotate_view=AcquireAuthenticCacheView(annotate_image,exception);
       for (y=0; y < (ssize_t) annotate_image->rows; y++)
       {
-        register ssize_t
+        ssize_t
           x;
 
-        register Quantum
+        Quantum
           *magick_restrict q;
 
         q=GetCacheViewAuthenticPixels(annotate_view,0,y,annotate_image->columns,

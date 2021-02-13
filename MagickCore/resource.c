@@ -17,7 +17,7 @@
 %                               September 2002                                %
 %                                                                             %
 %                                                                             %
-%  Copyright 1999-2020 ImageMagick Studio LLC, a non-profit organization      %
+%  Copyright 1999-2021 ImageMagick Studio LLC, a non-profit organization      %
 %  dedicated to making software imaging solutions freely available.           %
 %                                                                             %
 %  You may not use this file except in compliance with the License.  You may  %
@@ -126,8 +126,8 @@ static ResourceInfo
     MagickULLConstant(0),              /* initial thread */
     MagickULLConstant(0),              /* initial throttle */
     MagickULLConstant(0),              /* initial time */
-    SSIZE_MAX/MaxPixelChannels,        /* width limit */
-    SSIZE_MAX/MaxPixelChannels,        /* height limit */
+    MAGICK_SSIZE_MAX/sizeof(Quantum)/5,/* width limit */
+    MAGICK_SSIZE_MAX/sizeof(Quantum)/5,/* height limit */
     MagickResourceInfinity,            /* list length limit */
     MagickULLConstant(3072)*1024*1024, /* area limit */
     MagickULLConstant(1536)*1024*1024, /* memory limit */
@@ -533,7 +533,7 @@ MagickExport MagickBooleanType GetPathTemplate(char *path)
   directory=DestroyString(directory);
 #if defined(MAGICKCORE_WINDOWS_SUPPORT)
   {
-    register char
+    char
       *p;
 
     /*
@@ -561,10 +561,10 @@ MagickExport int AcquireUniqueFileResource(char *path)
     c,
     file;
 
-  register char
+  char
     *p;
 
-  register ssize_t
+  ssize_t
     i;
 
   static const char
@@ -591,7 +591,7 @@ MagickExport int AcquireUniqueFileResource(char *path)
   file=(-1);
   for (i=0; i < (ssize_t) TMP_MAX; i++)
   {
-    register ssize_t
+    ssize_t
       j;
 
     /*
@@ -1148,7 +1148,7 @@ MagickPrivate MagickBooleanType ResourceComponentGenesis(void)
   MagickSizeType
     memory;
 
-  register ssize_t
+  ssize_t
     i;
 
   ssize_t
@@ -1308,7 +1308,7 @@ MagickPrivate MagickBooleanType ResourceComponentGenesis(void)
 */
 MagickPrivate void ResourceComponentTerminus(void)
 {
-  register ssize_t
+  ssize_t
     i;
 
   for (i=0; i < (ssize_t) NumberOfResourceTypes; i++)
@@ -1416,7 +1416,7 @@ MagickExport MagickBooleanType SetMagickResourceLimit(const ResourceType type,
         resource_info.height_limit=MagickMin(limit,StringToMagickSizeType(
           value,100.0));
       resource_info.height_limit=MagickMin(resource_info.height_limit,
-        (MagickSizeType) SSIZE_MAX);
+        (MagickSizeType) MAGICK_SSIZE_MAX);
       break;
     }
     case ListLengthResource:
@@ -1494,7 +1494,7 @@ MagickExport MagickBooleanType SetMagickResourceLimit(const ResourceType type,
         resource_info.width_limit=MagickMin(limit,StringToMagickSizeType(value,
           100.0));
       resource_info.width_limit=MagickMin(resource_info.width_limit,
-        (MagickSizeType) SSIZE_MAX);
+        (MagickSizeType) MAGICK_SSIZE_MAX);
       break;
     }
     default:

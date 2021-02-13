@@ -17,7 +17,7 @@
 %                                 July 1992                                   %
 %                                                                             %
 %                                                                             %
-%  Copyright 1999-2020 ImageMagick Studio LLC, a non-profit organization      %
+%  Copyright 1999-2021 ImageMagick Studio LLC, a non-profit organization      %
 %  dedicated to making software imaging solutions freely available.           %
 %                                                                             %
 %  You may not use this file except in compliance with the License.  You may  %
@@ -156,10 +156,10 @@ static Image *ReadTGAImage(const ImageInfo *image_info,ExceptionInfo *exception)
   Quantum
     index;
 
-  register Quantum
+  Quantum
     *q;
 
-  register ssize_t
+  ssize_t
     i,
     x;
 
@@ -677,7 +677,7 @@ static inline void WriteTGAPixel(Image *image,TGAImageType image_type,
   const Quantum *p,const QuantumAny range,const double midpoint)
 {
   if (image_type == TGAColormap || image_type == TGARLEColormap)
-    (void) WriteBlobByte(image,(unsigned char) GetPixelIndex(image,p));
+    (void) WriteBlobByte(image,(unsigned char) ((ssize_t) GetPixelIndex(image,p)));
   else
     {
       if (image_type == TGAMonochrome || image_type == TGARLEMonochrome)
@@ -734,16 +734,16 @@ static MagickBooleanType WriteTGAImage(const ImageInfo *image_info,Image *image,
   QuantumAny
     range;
 
-  register const Quantum
+  const Quantum
     *p;
 
-  register ssize_t
+  ssize_t
     x;
 
-  register ssize_t
+  ssize_t
     i;
 
-  register unsigned char
+  unsigned char
     *q;
 
   size_t

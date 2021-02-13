@@ -13,7 +13,7 @@
 %                                2008.05.07                                   %
 %                                   v 0.9                                     %
 %                                                                             %
-%  Copyright 1999-2020 ImageMagick Studio LLC, a non-profit organization      %
+%  Copyright 1999-2021 ImageMagick Studio LLC, a non-profit organization      %
 %  dedicated to making software imaging solutions freely available.           %
 %                                                                             %
 %  You may not use this file except in compliance with the License.  You may  %
@@ -175,7 +175,7 @@ static Image *ReadIPLImage(const ImageInfo *image_info,ExceptionInfo *exception)
   Image *image;
 
   MagickBooleanType status;
-  register Quantum *q;
+  Quantum *q;
   unsigned char magick[12], *pixels;
   ssize_t count;
   ssize_t y;
@@ -515,7 +515,7 @@ static MagickBooleanType WriteIPLImage(const ImageInfo *image_info,Image *image,
   MagickOffsetType
     scene;
   
-  register const Quantum
+  const Quantum
     *p;
 
   QuantumInfo

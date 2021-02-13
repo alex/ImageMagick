@@ -584,6 +584,7 @@ static struct
       {"width", IntegerReference}, {"height", IntegerReference},
       {"intensity-sigma", RealReference}, {"spatial-sigma", RealReference},
       {"channel", MagickChannelOptions} } },
+    { "SortPixels", { { (const char *) NULL, NullReference } } },
   };
 
 static SplayTreeInfo
@@ -5065,6 +5066,9 @@ Get(ref,...)
             {
               j=info ? info->image_info->endian : image ? image->endian :
                 UndefinedEndian;
+              if (info)
+                if (info->image_info->endian == UndefinedEndian)
+                  j=image->endian;
               s=newSViv(j);
               (void) sv_setpv(s,CommandOptionToMnemonic(MagickEndianOptions,j));
               SvIOK_on(s);
@@ -5323,6 +5327,9 @@ Get(ref,...)
             {
               j=info ? info->image_info->interlace : image ? image->interlace :
                 UndefinedInterlace;
+              if (info)
+                if (info->image_info->interlace == UndefinedInterlace)
+                  j=image->interlace;
               s=newSViv(j);
               (void) sv_setpv(s,CommandOptionToMnemonic(MagickInterlaceOptions,
                 j));
@@ -5479,6 +5486,9 @@ Get(ref,...)
             {
               j=info ? info->image_info->orientation : image ?
                 image->orientation : UndefinedOrientation;
+              if (info)
+                if (info->image_info->orientation == UndefinedOrientation)
+                  j=image->orientation;
               s=newSViv(j);
               (void) sv_setpv(s,CommandOptionToMnemonic(MagickOrientationOptions,
                 j));
@@ -5752,8 +5762,8 @@ Get(ref,...)
             {
               j=info ? info->image_info->units : image ? image->units :
                 UndefinedResolution;
-              if (info && (info->image_info->units == UndefinedResolution))
-                if (image)
+              if (info)
+                if (info->image_info->units == UndefinedResolution)
                   j=image->units;
               if (j == UndefinedResolution)
                 s=newSVpv("undefined units",0);
@@ -6870,14 +6880,18 @@ GetPixels(ref,...)
         float
           *pixels;
 
-        pixels=(float *) AcquireQuantumMemory(strlen(map)*region.width,
+        MemoryInfo
+          *pixels_info;
+
+        pixels_info=AcquireVirtualMemory(strlen(map)*region.width,
           region.height*sizeof(*pixels));
-        if (pixels == (float *) NULL)
+        if (pixels_info == (MemoryInfo *) NULL)
           {
             ThrowPerlException(exception,ResourceLimitError,
               "MemoryAllocationFailed",PackageName);
             goto PerlException;
           }
+        pixels=(float *) GetVirtualMemoryBlob(pixels_info);
         status=ExportImagePixels(image,region.x,region.y,region.width,
           region.height,map,FloatPixel,pixels,exception);
         if (status == MagickFalse)
@@ -6888,21 +6902,25 @@ GetPixels(ref,...)
             for (i=0; i < (ssize_t) (strlen(map)*region.width*region.height); i++)
               PUSHs(sv_2mortal(newSVnv(pixels[i])));
           }
-        pixels=(float *) RelinquishMagickMemory(pixels);
+        pixels_info=RelinquishVirtualMemory(pixels_info);
       }
     else
       {
+        MemoryInfo
+          *pixels_info;
+
         Quantum
           *pixels;
 
-        pixels=(Quantum *) AcquireQuantumMemory(strlen(map)*region.width,
+        pixels_info=AcquireVirtualMemory(strlen(map)*region.width,
           region.height*sizeof(*pixels));
-        if (pixels == (Quantum *) NULL)
+        if (pixels_info == (MemoryInfo *) NULL)
           {
             ThrowPerlException(exception,ResourceLimitError,
               "MemoryAllocationFailed",PackageName);
             goto PerlException;
           }
+        pixels=(Quantum *) GetVirtualMemoryBlob(pixels_info);
         status=ExportImagePixels(image,region.x,region.y,region.width,
           region.height,map,QuantumPixel,pixels,exception);
         if (status == MagickFalse)
@@ -6913,7 +6931,7 @@ GetPixels(ref,...)
             for (i=0; i < (ssize_t) (strlen(map)*region.width*region.height); i++)
               PUSHs(sv_2mortal(newSViv(pixels[i])));
           }
-        pixels=(Quantum *) RelinquishMagickMemory(pixels);
+        pixels_info=RelinquishVirtualMemory(pixels_info);
       }
 
   PerlException:
@@ -7675,6 +7693,8 @@ Mogrify(ref,...)
     WhiteBalanceImage  = 304
     BilateralBlur      = 305
     BilateralBlurImage = 306
+    SortPixels         = 307
+    SortPixelsImage    = 308
     MogrifyRegion      = 666
   PPCODE:
   {
@@ -11585,16 +11605,16 @@ Mogrify(ref,...)
               if ((flags & SigmaValue) == 0)
                 geometry_info.sigma=geometry_info.rho;
               if ((flags & XiValue) == 0)
-                geometry_info.xi=1.0*sqrt(geometry_info.rho*geometry_info.rho+
+                geometry_info.xi=2.0*sqrt(geometry_info.rho*geometry_info.rho+
                   geometry_info.sigma*geometry_info.sigma);
               if ((flags & PsiValue) == 0)
-                geometry_info.psi=0.25*sqrt(geometry_info.rho*geometry_info.rho+
+                geometry_info.psi=0.5*sqrt(geometry_info.rho*geometry_info.rho+
                   geometry_info.sigma*geometry_info.sigma);
             }
           if (attribute_flag[1] != 0)
-            geometry_info.rho=(double) argument_list[1].integer_reference;
+            geometry_info.rho=argument_list[1].integer_reference;
           if (attribute_flag[2] != 0)
-            geometry_info.sigma=(double) argument_list[2].integer_reference;
+            geometry_info.sigma=argument_list[2].integer_reference;
           if (attribute_flag[3] != 0)
             geometry_info.xi=argument_list[3].real_reference;
           if (attribute_flag[4] != 0)
@@ -11606,6 +11626,11 @@ Mogrify(ref,...)
             geometry_info.sigma,geometry_info.xi,geometry_info.psi,exception);
           if (image != (Image *) NULL)
             (void) SetImageChannelMask(image,channel_mask);
+          break;
+        }
+        case 154:  /* SortPixels */
+        {
+          (void) SortImagePixels(image,exception);
           break;
         }
       }

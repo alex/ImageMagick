@@ -17,7 +17,7 @@
 %                                 July 1992                                   %
 %                                                                             %
 %                                                                             %
-%  Copyright 1999-2020 ImageMagick Studio LLC, a non-profit organization      %
+%  Copyright 1999-2021 ImageMagick Studio LLC, a non-profit organization      %
 %  dedicated to making software imaging solutions freely available.           %
 %                                                                             %
 %  You may not use this file except in compliance with the License.  You may  %
@@ -401,7 +401,7 @@ static void cmsDeleteContext(cmsContext magick_unused(ContextID))
 
 static void **DestroyPixelThreadSet(void **pixels)
 {
-  register ssize_t
+  ssize_t
     i;
 
   if (pixels == (void **) NULL)
@@ -416,7 +416,7 @@ static void **DestroyPixelThreadSet(void **pixels)
 static void **AcquirePixelThreadSet(const size_t columns,
   const size_t channels,MagickBooleanType highres)
 {
-  register ssize_t
+  ssize_t
     i;
 
   size_t
@@ -447,7 +447,7 @@ static void **AcquirePixelThreadSet(const size_t columns,
 
 static cmsHTRANSFORM *DestroyTransformThreadSet(cmsHTRANSFORM *transform)
 {
-  register ssize_t
+  ssize_t
     i;
 
   assert(transform != (cmsHTRANSFORM *) NULL);
@@ -465,7 +465,7 @@ static cmsHTRANSFORM *AcquireTransformThreadSet(const LCMSInfo *source_info,
   cmsHTRANSFORM
     *transform;
 
-  register ssize_t
+  ssize_t
     i;
 
   size_t
@@ -530,10 +530,10 @@ static void TransformDoublePixels(const int id,const Image* image,
 #define SetLCMSPixel(target_info,pixel) \
   ClampToQuantum(target_info->scale*QuantumRange*(pixel)+target_info->translate)
 
-  register double
+  double
     *p;
 
-  register ssize_t
+  ssize_t
     x;
 
   p=(double *) source_info->pixels[id];
@@ -580,10 +580,10 @@ static void TransformQuantumPixels(const int id,const Image* image,
   const LCMSInfo *source_info,const LCMSInfo *target_info,
   const cmsHTRANSFORM *transform,Quantum *q)
 {
-  register Quantum
+  Quantum
     *p;
 
-  register ssize_t
+  ssize_t
     x;
 
   p=(Quantum *) source_info->pixels[id];
@@ -1354,7 +1354,7 @@ MagickExport MagickBooleanType ProfileImage(Image *image,const char *name,
               MagickBooleanType
                 sync;
 
-              register Quantum
+              Quantum
                 *magick_restrict q;
 
               if (status == MagickFalse)
@@ -1589,7 +1589,7 @@ static void WriteTo8BimProfile(Image *image,const char *name,
     *datum,
     *q;
 
-  register const unsigned char
+  const unsigned char
     *p;
 
   size_t
@@ -1697,7 +1697,7 @@ static void GetProfilesFromResourceBlock(Image *image,
   const unsigned char
     *datum;
 
-  register const unsigned char
+  const unsigned char
     *p;
 
   size_t
@@ -1842,7 +1842,7 @@ static void GetProfilesFromResourceBlock(Image *image,
 
 static void PatchCorruptProfile(const char *name,StringInfo *profile)
 {
-  register unsigned char
+  unsigned char
     *p;
 
   size_t
@@ -1924,7 +1924,7 @@ static MagickBooleanType ValidateXMPProfile(Image *image,
 static MagickBooleanType ValidateXMPProfile(Image *image,
   const StringInfo *profile,ExceptionInfo *exception)
 {
-  (void) ThrowMagickException(exception,GetMagickModule(),MissingDelegateError,
+  (void) ThrowMagickException(exception,GetMagickModule(),MissingDelegateWarning,
     "DelegateLibrarySupportNotBuiltIn","'%s' (XML)",image->filename);
   return(MagickFalse);
 }
@@ -2317,7 +2317,7 @@ MagickBooleanType SyncExifProfile(Image *image,StringInfo *profile)
       int
         components;
 
-      register unsigned char
+      unsigned char
         *p,
         *q;
 
@@ -2454,7 +2454,7 @@ static void UpdateClipPath(unsigned char *blob,size_t length,
   const size_t old_columns,const size_t old_rows,
   const RectangleInfo *new_geometry)
 {
-  register ssize_t
+  ssize_t
     i;
 
   ssize_t
@@ -2512,12 +2512,12 @@ static void UpdateClipPath(unsigned char *blob,size_t length,
             yy;
 
           y=(double) ReadProfileMSBLong(&blob,&length);
-          y=y*old_rows/4096/4096;
+          y=y*old_rows/4096.0/4096.0;
           y-=new_geometry->y;
           yy=(signed int) ((y*4096*4096)/new_geometry->height);
           WriteProfileLong(MSBEndian,(size_t) yy,blob-4);
           x=(double) ReadProfileMSBLong(&blob,&length);
-          x=x*old_columns/4096/4096;
+          x=x*old_columns/4096.0/4096.0;
           x-=new_geometry->x;
           xx=(signed int) ((x*4096*4096)/new_geometry->width);
           WriteProfileLong(MSBEndian,(size_t) xx,blob-4);

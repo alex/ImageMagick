@@ -17,7 +17,7 @@
 %                            September 1994                                   %
 %                                                                             %
 %                                                                             %
-%  Copyright 1999-2020 ImageMagick Studio LLC, a non-profit organization      %
+%  Copyright 1999-2021 ImageMagick Studio LLC, a non-profit organization      %
 %  dedicated to making software imaging solutions freely available.           %
 %                                                                             %
 %  You may not use this file except in compliance with the License.  You may  %
@@ -134,7 +134,7 @@ static ChannelStatistics *GetLocationStatistics(const Image *image,
   ChannelStatistics
     *channel_statistics;
 
-  register ssize_t
+  ssize_t
     i;
 
   ssize_t
@@ -169,10 +169,10 @@ static ChannelStatistics *GetLocationStatistics(const Image *image,
   }
   for (y=0; y < (ssize_t) image->rows; y++)
   {
-    register const Quantum
+    const Quantum
       *magick_restrict p;
 
-    register ssize_t
+    ssize_t
       x;
 
     p=GetVirtualPixels(image,0,y,image->columns,1,exception);
@@ -309,7 +309,7 @@ static ssize_t PrintChannelLocations(FILE *file,const Image *image,
   n=0;
   for (y=0; y < (ssize_t) image->rows; y++)
   {
-    register const Quantum
+    const Quantum
       *p;
 
     ssize_t
@@ -352,7 +352,7 @@ static ssize_t PrintChannelMoments(FILE *file,const PixelChannel channel,
     powers[MaximumNumberOfImageMoments] =
       { 1.0, 2.0, 3.0, 3.0, 6.0, 4.0, 6.0, 4.0 };
 
-  register ssize_t
+  ssize_t
     i;
 
   ssize_t
@@ -383,7 +383,7 @@ static ssize_t PrintChannelMoments(FILE *file,const PixelChannel channel,
 static ssize_t PrintChannelPerceptualHash(Image *image,FILE *file,
   const ChannelPerceptualHash *channel_phash)
 {
-  register ssize_t
+  ssize_t
     i;
 
   ssize_t
@@ -407,7 +407,7 @@ static ssize_t PrintChannelPerceptualHash(Image *image,FILE *file,
     PixelTrait
       traits;
 
-    register ssize_t
+    ssize_t
       j;
 
     channel=GetPixelChannelChannel(image,i);
@@ -419,7 +419,7 @@ static ssize_t PrintChannelPerceptualHash(Image *image,FILE *file,
     n=FormatLocaleFile(file,"    Channel %.20g:\n",(double) channel);
     for (j=0; j < MaximumNumberOfPerceptualHashes; j++)
     {
-      register ssize_t
+      ssize_t
         k;
 
       n+=FormatLocaleFile(file,"      PH%.20g: ",(double) j+1);
@@ -513,10 +513,10 @@ MagickExport MagickBooleanType IdentifyImage(Image *image,FILE *file,
   MagickBooleanType
     ping;
 
-  register const Quantum
+  const Quantum
     *p;
 
-  register ssize_t
+  ssize_t
     i,
     x;
 
@@ -1083,7 +1083,7 @@ MagickExport MagickBooleanType IdentifyImage(Image *image,FILE *file,
           PixelInfo
             pixel;
 
-          register PixelInfo
+          PixelInfo
             *magick_restrict c;
 
           GetPixelInfo(image,&pixel);
@@ -1218,7 +1218,7 @@ MagickExport MagickBooleanType IdentifyImage(Image *image,FILE *file,
       ImageInfo
         *image_info;
 
-      register char
+      char
         *d,
         *q;
 
@@ -1277,55 +1277,57 @@ MagickExport MagickBooleanType IdentifyImage(Image *image,FILE *file,
         (void) fputc('\n',file);
       (void) FormatLocaleFile(file,"%s\n",value);
     }
-  {
-    char
-      *points,
-      value[MagickPathExtent];
+  artifact=GetImageArtifact(image,"identify:convex-hull");
+  if (IsStringTrue(artifact) != MagickFalse)
+    {
+      char
+        *points,
+        value[MagickPathExtent];
 
-    PointInfo
-      *bounding_box,
-      *convex_hull;
+      PointInfo
+        *bounding_box,
+        *convex_hull;
 
-    register ssize_t
-      n;
+      ssize_t
+        n;
 
-    size_t
-      number_points;
+      size_t
+        number_points;
 
-    /*
-      Display convex hull & minimum bounding box.
-    */
-    convex_hull=GetImageConvexHull(image,&number_points,exception);
-    if (convex_hull != (PointInfo *) NULL)
-      {
-        points=AcquireString("");
-        for (n=0; n < (ssize_t) number_points; n++)
+      /*
+        Display convex hull & minimum bounding box.
+      */
+      convex_hull=GetImageConvexHull(image,&number_points,exception);
+      if (convex_hull != (PointInfo *) NULL)
         {
-          (void) FormatLocaleString(value,MagickPathExtent,"%g,%g ",
-            convex_hull[n].x,convex_hull[n].y);
-          (void) ConcatenateString(&points,value);
+          points=AcquireString("");
+          for (n=0; n < (ssize_t) number_points; n++)
+          {
+            (void) FormatLocaleString(value,MagickPathExtent,"%g,%g ",
+              convex_hull[n].x,convex_hull[n].y);
+            (void) ConcatenateString(&points,value);
+          }
+          convex_hull=(PointInfo *) RelinquishMagickMemory(convex_hull);
+          (void) FormatLocaleFile(file,"  Convex hull: ");
+          (void) FormatLocaleFile(file,"%s\n",points);
+          points=DestroyString(points);
         }
-        convex_hull=(PointInfo *) RelinquishMagickMemory(convex_hull);
-        (void) FormatLocaleFile(file,"  Convex hull: ");
-        (void) FormatLocaleFile(file,"%s\n",points);
-        points=DestroyString(points);
-      }
-    bounding_box=GetImageMinimumBoundingBox(image,&number_points,exception);
-    if (bounding_box != (PointInfo *) NULL)
-      {
-        points=AcquireString("");
-        for (n=0; n < (ssize_t) number_points; n++)
+      bounding_box=GetImageMinimumBoundingBox(image,&number_points,exception);
+      if (bounding_box != (PointInfo *) NULL)
         {
-          (void) FormatLocaleString(value,MagickPathExtent,"%g,%g ",
-            bounding_box[n].x,bounding_box[n].y);
-          (void) ConcatenateString(&points,value);
+          points=AcquireString("");
+          for (n=0; n < (ssize_t) number_points; n++)
+          {
+            (void) FormatLocaleString(value,MagickPathExtent,"%g,%g ",
+              bounding_box[n].x,bounding_box[n].y);
+            (void) ConcatenateString(&points,value);
+          }
+          bounding_box=(PointInfo *) RelinquishMagickMemory(bounding_box);
+          (void) FormatLocaleFile(file,"  Minimum bounding box: ");
+          (void) FormatLocaleFile(file,"%s\n",points);
+          points=DestroyString(points);
         }
-        bounding_box=(PointInfo *) RelinquishMagickMemory(bounding_box);
-        (void) FormatLocaleFile(file,"  Minimum bounding box: ");
-        (void) FormatLocaleFile(file,"%s\n",points);
-        points=DestroyString(points);
-      }
-  }
+    }
   ResetImageProfileIterator(image);
   name=GetNextImageProfile(image);
   if (name != (char *) NULL)
@@ -1358,7 +1360,7 @@ MagickExport MagickBooleanType IdentifyImage(Image *image,FILE *file,
               record,
               sentinel;
 
-            register ssize_t
+            ssize_t
               j;
 
             size_t

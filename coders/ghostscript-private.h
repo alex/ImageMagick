@@ -1,5 +1,5 @@
 /*
-  Copyright 1999-2020 ImageMagick Studio LLC, a non-profit organization
+  Copyright 1999-2021 ImageMagick Studio LLC, a non-profit organization
   dedicated to making software imaging solutions freely available.
 
   You may not use this file except in compliance with the License.  You may
@@ -58,6 +58,24 @@ static double GhostscriptVersion(const GhostInfo *ghost_info)
 }
 #endif
 
+static inline MagickBooleanType ExecuteGhostscriptCommand(
+  const MagickBooleanType verbose,const char *command,char *message,
+  ExceptionInfo *exception)
+{
+  int
+    status;
+
+  status=ExternalDelegateCommand(MagickFalse,verbose,command,message,
+    exception);
+  if (status == 0)
+    return(MagickTrue);
+  if (status < 0)
+    return(MagickFalse);
+  (void) ThrowMagickException(exception,GetMagickModule(),DelegateError,
+    "FailedToExecuteCommand","`%s' (%d)",command,status);
+  return(MagickFalse);
+}
+
 static inline MagickBooleanType InvokeGhostscriptDelegate(
   const MagickBooleanType verbose,const char *command,char *message,
   ExceptionInfo *exception)
@@ -79,19 +97,6 @@ static inline MagickBooleanType InvokeGhostscriptDelegate(
         } \
     }
 
-#define ExecuteGhostscriptCommand(command,status) \
-{ \
-  status=ExternalDelegateCommand(MagickFalse,verbose,command,message, \
-    exception); \
-  if (status == 0) \
-    return(MagickTrue); \
-  if (status < 0) \
-    return(MagickFalse); \
-  (void) ThrowMagickException(exception,GetMagickModule(),DelegateError, \
-    "FailedToExecuteCommand","`%s' (%d)",command,status); \
-  return(MagickFalse); \
-}
-
   char
     **argv,
     *errors;
@@ -109,7 +114,7 @@ static inline MagickBooleanType InvokeGhostscriptDelegate(
     argc,
     code;
 
-  register ssize_t
+  ssize_t
     i;
 
 #if defined(MAGICKCORE_WINDOWS_SUPPORT)
@@ -135,7 +140,7 @@ static inline MagickBooleanType InvokeGhostscriptDelegate(
   ghost_info_struct.revision=(int (*)(gsapi_revision_t *,int)) gsapi_revision;
 #endif
   if (ghost_info == (GhostInfo *) NULL)
-    ExecuteGhostscriptCommand(command,status);
+    return(ExecuteGhostscriptCommand(verbose,command,message,exception));
   if (verbose != MagickFalse)
     {
       (void) fprintf(stdout,"[ghostscript library %.2f]",
@@ -147,7 +152,7 @@ static inline MagickBooleanType InvokeGhostscriptDelegate(
   errors=(char *) NULL;
   status=(ghost_info->new_instance)(&interpreter,(void *) &errors);
   if (status < 0)
-    ExecuteGhostscriptCommand(command,status);
+    return(ExecuteGhostscriptCommand(verbose,command,message,exception));
   code=0;
   argv=StringToArgv(command,&argc);
   if (argv == (char **) NULL)
@@ -226,7 +231,7 @@ static inline void ReadGhostScriptXMPProfile(MagickByteBuffer *buffer,
     found_end,
     status;
 
-  register char
+  char
     *p;
 
   size_t

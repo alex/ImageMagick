@@ -1,5 +1,5 @@
 /*
-  Copyright 1999-2020 ImageMagick Studio LLC, a non-profit organization
+  Copyright 1999-2021 ImageMagick Studio LLC, a non-profit organization
   dedicated to making software imaging solutions freely available.
 
   You may not use this file except in compliance with the License.  You may
@@ -235,7 +235,8 @@ extern MagickExport MagickBooleanType
     const Quantum *) magick_attribute((__pure__)),
   IsFuzzyEquivalencePixelInfo(const PixelInfo *,const PixelInfo *)
     magick_attribute((__pure__)),
-  SetPixelMetaChannels(Image *,const size_t,ExceptionInfo *);
+  SetPixelMetaChannels(Image *,const size_t,ExceptionInfo *),
+  SortImagePixels(Image *,ExceptionInfo *);
 
 extern MagickExport MagickRealType
   GetPixelInfoIntensity(const Image *magick_restrict,

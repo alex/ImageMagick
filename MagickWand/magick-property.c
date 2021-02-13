@@ -23,7 +23,7 @@
 %                                 August 2003                                 %
 %                                                                             %
 %                                                                             %
-%  Copyright 1999-2020 ImageMagick Studio LLC, a non-profit organization      %
+%  Copyright 1999-2021 ImageMagick Studio LLC, a non-profit organization      %
 %  dedicated to making software imaging solutions freely available.           %
 %                                                                             %
 %  You may not use this file except in compliance with the License.  You may  %
@@ -50,6 +50,7 @@
 #include "MagickWand/MagickWand.h"
 #include "MagickWand/magick-wand-private.h"
 #include "MagickWand/wand.h"
+#include "MagickCore/image-private.h"
 #include "MagickCore/string-private.h"
 
 /*
@@ -600,7 +601,7 @@ WandExport char **MagickGetImageArtifacts(MagickWand *wand,
   const char
     *artifact;
 
-  register ssize_t
+  ssize_t
     i;
 
   size_t
@@ -707,8 +708,7 @@ WandExport unsigned char *MagickGetImageProfile(MagickWand *wand,
     sizeof(*datum));
   if (datum == (unsigned char *) NULL)
     return((unsigned char *) NULL);
-  (void) memcpy(datum,GetStringInfoDatum(profile),
-    GetStringInfoLength(profile));
+  (void) memcpy(datum,GetStringInfoDatum(profile),GetStringInfoLength(profile));
   *length=(size_t) GetStringInfoLength(profile);
   return(datum);
 }
@@ -752,7 +752,7 @@ WandExport char **MagickGetImageProfiles(MagickWand *wand,const char *pattern,
   const char
     *property;
 
-  register ssize_t
+  ssize_t
     i;
 
   size_t
@@ -889,7 +889,7 @@ WandExport char **MagickGetImageProperties(MagickWand *wand,
   const char
     *property;
 
-  register ssize_t
+  ssize_t
     i;
 
   size_t
@@ -1091,7 +1091,7 @@ WandExport char **MagickGetOptions(MagickWand *wand,const char *pattern,
   const char
     *option;
 
-  register ssize_t
+  ssize_t
     i;
 
   size_t
@@ -1393,8 +1393,8 @@ WandExport MagickBooleanType MagickGetResolution(const MagickWand *wand,
   assert(wand->signature == MagickWandSignature);
   if (wand->debug != MagickFalse)
     (void) LogMagickEvent(WandEvent,GetMagickModule(),"%s",wand->name);
-  *x=72.0;
-  *y=72.0;
+  *x=DefaultResolution;
+  *y=DefaultResolution;
   if (wand->image_info->density != (char *) NULL)
     {
       GeometryInfo
@@ -1497,10 +1497,10 @@ WandExport double *MagickGetSamplingFactors(MagickWand *wand,
   double
     *sampling_factors;
 
-  register const char
+  const char
     *p;
 
-  register ssize_t
+  ssize_t
     i;
 
   assert(wand != (MagickWand *) NULL);
@@ -2779,7 +2779,7 @@ WandExport MagickBooleanType MagickSetSamplingFactors(MagickWand *wand,
   char
     sampling_factor[MagickPathExtent];
 
-  register ssize_t
+  ssize_t
     i;
 
   assert(wand != (MagickWand *) NULL);

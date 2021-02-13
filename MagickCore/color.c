@@ -16,7 +16,7 @@
 %                                 July 1992                                   %
 %                                                                             %
 %                                                                             %
-%  Copyright 1999-2020 ImageMagick Studio LLC, a non-profit organization      %
+%  Copyright 1999-2021 ImageMagick Studio LLC, a non-profit organization      %
 %  dedicated to making software imaging solutions freely available.           %
 %                                                                             %
 %  You may not use this file except in compliance with the License.  You may  %
@@ -839,7 +839,7 @@ static LinkedListInfo *AcquireColorCache(const char *filename,
   MagickStatusType
     status;
 
-  register ssize_t
+  ssize_t
     i;
 
   /*
@@ -874,7 +874,7 @@ static LinkedListInfo *AcquireColorCache(const char *filename,
     ColorInfo
       *color_info;
 
-    register const ColormapInfo
+    const ColormapInfo
       *p;
 
     p=Colormap+i;
@@ -950,7 +950,7 @@ MagickPrivate MagickBooleanType ColorComponentGenesis(void)
 
 static void *DestroyColorElement(void *color_info)
 {
-  register ColorInfo
+  ColorInfo
     *p;
 
   p=(ColorInfo *) color_info;
@@ -1010,10 +1010,10 @@ MagickExport const ColorInfo *GetColorCompliance(const char *name,
   char
     colorname[MagickPathExtent];
 
-  register const ColorInfo
+  const ColorInfo
     *p;
 
-  register char
+  char
     *q;
 
   assert(exception != (ExceptionInfo *) NULL);
@@ -1135,14 +1135,14 @@ static inline MagickBooleanType IsSVGCompliant(const PixelInfo *pixel)
   /*
     SVG requires color depths > 8 expressed as percentages.
   */
-  if (fabs(SVGCompliant(pixel->red)-pixel->red) >= SVGEpsilon)
+  if (fabs((double) (SVGCompliant(pixel->red)-pixel->red)) >= SVGEpsilon)
     return(MagickFalse);
-  if (fabs(SVGCompliant(pixel->green)-pixel->green) >= SVGEpsilon)
+  if (fabs((double) (SVGCompliant(pixel->green)-pixel->green)) >= SVGEpsilon)
     return(MagickFalse);
-  if (fabs(SVGCompliant(pixel->blue)-pixel->blue) >= SVGEpsilon)
+  if (fabs((double) (SVGCompliant(pixel->blue)-pixel->blue)) >= SVGEpsilon)
     return(MagickFalse);
   if ((pixel->colorspace == CMYKColorspace) &&
-      (fabs(SVGCompliant(pixel->black)-pixel->black) >= SVGEpsilon))
+      (fabs((double) (SVGCompliant(pixel->black)-pixel->black)) >= SVGEpsilon))
     return(MagickFalse);
   return(MagickTrue);
 }
@@ -1285,10 +1285,10 @@ MagickExport const ColorInfo **GetColorInfoList(const char *pattern,
   const ColorInfo
     **colors;
 
-  register const ColorInfo
+  const ColorInfo
     *p;
 
-  register ssize_t
+  ssize_t
     i;
 
   /*
@@ -1359,7 +1359,7 @@ extern "C" {
 
 static int ColorCompare(const void *x,const void *y)
 {
-  register const char
+  const char
     **p,
     **q;
 
@@ -1378,10 +1378,10 @@ MagickExport char **GetColorList(const char *pattern,
   char
     **colors;
 
-  register const ColorInfo
+  const ColorInfo
     *p;
 
-  register ssize_t
+  ssize_t
     i;
 
   /*
@@ -1650,7 +1650,7 @@ MagickPrivate MagickBooleanType IsEquivalentAlpha(const Image *image,
     fuzz,
     pixel;
 
-  register double
+  double
     distance;
 
   if (image->alpha_trait == UndefinedPixelTrait)
@@ -1718,11 +1718,11 @@ MagickExport MagickBooleanType IsEquivalentImage(const Image *image,
     target,
     pixel;
 
-  register const Quantum
+  const Quantum
     *p,
     *q;
 
-  register ssize_t
+  ssize_t
     i,
     x;
 
@@ -1827,7 +1827,7 @@ MagickPrivate MagickBooleanType IsEquivalentIntensity(const Image *image,
     fuzz,
     pixel;
 
-  register double
+  double
     distance;
 
   if (GetPixelInfoIntensity(image,p) == GetPixelInfoIntensity(image,q))
@@ -1879,7 +1879,7 @@ MagickExport MagickBooleanType ListColorInfo(FILE *file,
   const ColorInfo
     **color_info;
 
-  register ssize_t
+  ssize_t
     i;
 
   size_t
@@ -2184,7 +2184,7 @@ static MagickStatusType ParseCSSColor(const char *magick_restrict color,
   char
     *q;
 
-  register ssize_t
+  ssize_t
     i;
 
   MagickStatusType
@@ -2206,12 +2206,12 @@ static MagickStatusType ParseCSSColor(const char *magick_restrict color,
       intensity;
 
     p=q;
-    intensity=StringToDouble(p,&q);
+    intensity=(float) StringToDouble(p,&q);
     if (p == q)
       break;
     if (*q == '%')
       {
-        intensity*=255.0/100.0;
+        intensity*=0.01*255.0;
         q++;
       }
     switch (i)
@@ -2274,10 +2274,10 @@ MagickExport MagickBooleanType QueryColorCompliance(const char *name,
   MagickStatusType
     flags;
 
-  register const ColorInfo
+  const ColorInfo
     *p;
 
-  register ssize_t
+  ssize_t
     i;
 
   ssize_t
@@ -2418,7 +2418,7 @@ MagickExport MagickBooleanType QueryColorCompliance(const char *name,
       if ((LocaleCompare(colorspace,"color") == 0) ||
           (LocaleCompare(colorspace,"icc-color") == 0))
         {
-          register ssize_t
+          ssize_t
             j;
 
           (void) CopyMagickString(colorspace,name+i+2,MagickPathExtent);
@@ -2505,8 +2505,14 @@ MagickExport MagickBooleanType QueryColorCompliance(const char *name,
               geometry_info.psi));
           else
             if (color->alpha_trait != UndefinedPixelTrait)
-              color->alpha=(double) ClampToQuantum((MagickRealType) (scale*
-                geometry_info.psi));
+              {
+                if ((flags & AlphaValue) != 0)
+                  color->alpha=(double) ClampToQuantum((MagickRealType) (scale*
+                    geometry_info.psi));
+                else
+                  color->alpha=(double) ClampToQuantum((MagickRealType) (
+                    QuantumRange*geometry_info.psi));
+              }
         }
       if (((flags & ChiValue) != 0) &&
           (color->alpha_trait != UndefinedPixelTrait))
@@ -2661,7 +2667,7 @@ MagickExport MagickBooleanType QueryColorname(
   double
     alpha;
 
-  register const ColorInfo
+  const ColorInfo
     *p;
 
   magick_unreferenced(image);

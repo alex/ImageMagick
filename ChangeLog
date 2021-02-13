@@ -1,3 +1,103 @@
+2021-02-13  7.0.11-0  <quetzlzacatenango@image...>
+  * Release ImageMagick version 7.0.11-0 GIT revision 18438:ff3ef50ab:20210213
+
+2021-02-10  7.0.11-0  <quetzlzacatenango@image...>
+  * bump minor version #
+  * allow reading multichannel PSD files with 1 or 2 channels.
+  * respect masks when computing SSIM metric (reference
+    https://github.com/ImageMagick/ImageMagick/discussions/3212).
+
+2021-02-07  7.0.10-62  <quetzlzacatenango@image...>
+  * Release ImageMagick version 7.0.10-62 GIT revision 18418:f1e915f65:20210207
+
+2021-02-01  7.0.10-62  <quetzlzacatenango@image...>
+  * -trim not working as expected (reference
+    https://github.com/ImageMagick/ImageMagick/discussions/3172).
+  * possible undefined behavior (reference
+    https://github.com/ImageMagick/ImageMagick/issues/3195).
+  * sanitize buggy ascender and descender values (reference
+    https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=980202).
+
+2021-01-30  7.0.10-61  <quetzlzacatenango@image...>
+  * Release ImageMagick version 7.0.10-61 GIT revision 18360:d3bec838c:20210130
+
+2021-01-25  7.0.10-61  <quetzlzacatenango@image...>
+  * dng:decode element in delegates.xml quoted incorrectly (reference
+    https://github.com/ImageMagick/ImageMagick/issues/3156).
+  * Extract GPS info from TIFF images (reference
+    https://github.com/ImageMagick/ImageMagick/issues/3167).
+  * Revert tieing MagickFloatType to double (reference
+    https://github.com/ImageMagick/ImageMagick/pull/2832).
+
+2021-01-25  7.0.10-60  <quetzlzacatenango@image...>
+  * Release ImageMagick version 7.0.10-60 GIT revision 18347:9a84e249b:20210125
+
+2021-01-24  7.0.10-60  <quetzlzacatenango@image...>
+  * revert configure script for validating JXL delegate library.
+  * the distributed pixel cache now properly deserializes the image attributes.
+
+2021-01-24  7.0.10-59  <quetzlzacatenango@image...>
+  * Release ImageMagick version 7.0.10-59 GIT revision 18340:d30ae5272:20210124
+
+2021-01-20  7.0.10-59  <quetzlzacatenango@image...>
+  * strip EXIF marker from profile (reference
+    https://github.com/ImageMagick/ImageMagick/issues/3140).
+  * add --enable-opencl to the configure command-line to enable OpenCL
+    support.
+  * generate histograms by comparing pixel components rather than color
+    (reference https://github.com/ImageMagick/ImageMagick/discussions/3142).
+
+2021-01-16  7.0.10-58  <quetzlzacatenango@image...>
+  * Release ImageMagick version 7.0.10-58 GIT revision 18277:8876652f5:20210116
+
+2021-01-11  7.0.10-58  <quetzlzacatenango@image...>
+  * identify the convex hull and minimum bounding box attributes of an image
+    with the -define identify:convex-hull=true define.
+  * set the quality to 100 to produce lossless HEIC images (reference
+    https://github.com/ImageMagick/ImageMagick/pull/3116).
+  * properly identify SVG images (reference
+    https://github.com/ImageMagick/ImageMagick/issues/3117).
+  * duplicate operator: inverse range parameter working again (reference
+    https://github.com/ImageMagick/ImageMagick/issues/3113).
+  * Fix rounding error for CSS colors on i686 (reference
+    https://tracker.debian.org/pkg/imagemagick).
+
+2021-01-09  7.0.10-57  <quetzlzacatenango@image...>
+  * Release ImageMagick version 7.0.10-57 GIT revision 18221:2f611d533:20210109
+
+2021-01-08  7.0.10-57  <quetzlzacatenango@image...>
+  * update automake/autoconf configuration files.
+  * additional checks to prevent integer overflow.
+
+2021-01-05  7.0.10-56  <quetzlzacatenango@image...>
+  * Release ImageMagick version 7.0.10-56 GIT revision 18192:2fb74f026:20210105
+
+2021-01-05  7.0.10-56  <quetzlzacatenango@image...>
+  * Fix rounding error for CSS colors (reference
+    https://github.com/ImageMagick/ImageMagick6/issues/129).
+
+2021-01-03  7.0.10-55  <quetzlzacatenango@image...>
+  * Release ImageMagick version 7.0.10-55 GIT revision 18181:636ebf7ba:20210103
+
+2021-01-04  7.0.10-55  <quetzlzacatenango@image...>
+  * revert changes to the default max width/height of image.
+
+2021-01-02  7.0.10-54  <quetzlzacatenango@image...>
+  * Release ImageMagick version 7.0.10-54 GIT revision 18159:24fabe7e2:20210102
+
+2020-12-27  7.0.10-54  Dirk Lemstra <dirk@lem.....org>
+  * replaced jxl coder with an implementation that uses the jpeg-xl reference
+    library.
+  * added -define trim:edges=(north,east,south,west) that can be used to
+    trim a single or multiple edges.
+
+2020-12-25  7.0.10-54  <quetzlzacatenango@image...>
+  * enable reading of a certain grayscale TIFF image.
+  * support HEIC depth masks (reference
+    https://github.com/ImageMagick/ImageMagick/discussions/3040).
+  * validate pixel cache offsets (reference
+    https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=29039).
+
 2020-12-24  7.0.10-53  <quetzlzacatenango@image...>
   * Release ImageMagick version 7.0.10-53 GIT revision 18083:3b141f557:20201224
 

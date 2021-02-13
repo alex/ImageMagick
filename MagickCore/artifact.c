@@ -17,7 +17,7 @@
 %                                 March 2000                                  %
 %                                                                             %
 %                                                                             %
-%  Copyright 1999-2020 ImageMagick Studio LLC, a non-profit organization      %
+%  Copyright 1999-2021 ImageMagick Studio LLC, a non-profit organization      %
 %  dedicated to making software imaging solutions freely available.           %
 %                                                                             %
 %  You may not use this file except in compliance with the License.  You may  %
@@ -155,7 +155,7 @@ MagickExport MagickBooleanType DefineImageArtifact(Image *image,
     key[MagickPathExtent],
     value[MagickPathExtent];
 
-  register char
+  char
     *p;
 
   assert(image != (Image *) NULL);
@@ -273,7 +273,7 @@ MagickExport void DestroyImageArtifacts(Image *image)
 MagickExport const char *GetImageArtifact(const Image *image,
   const char *artifact)
 {
-  register const char
+  const char
     *p;
 
   assert(image != (Image *) NULL);
