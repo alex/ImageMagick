@@ -33,7 +33,7 @@ jobs:
       run: |
         set -e
         apt update
-        apt-get install -y autoconf pkg-config gcc libfontconfig1-dev libfreetype6-dev libltdl-dev
+        apt-get install -y autoconf pkg-config gcc libfontconfig1-dev libfreetype6-dev libltdl-dev curl
 
     - name: Install Rust
       uses: actions-rs/toolchain@v1
