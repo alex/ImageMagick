@@ -30,7 +30,7 @@ jobs:
       run: |
         set -e
         apt-get update -y
-        apt-get install -y autoconf pkg-config ${{matrix.compiler}} curl
+        apt-get install -y autoconf pkg-config ${{matrix.compiler}} curl libclang-dev
 
     - name: Install Rust
       uses: actions-rs/toolchain@v1
