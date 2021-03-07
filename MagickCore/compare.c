@@ -805,8 +805,9 @@ static MagickBooleanType GetMeanErrorPerPixel(Image *image,
   }
   reconstruct_view=DestroyCacheView(reconstruct_view);
   image_view=DestroyCacheView(image_view);
-  image->error.mean_error_per_pixel=distortion[CompositePixelChannel]/area;
-  image->error.normalized_mean_error=QuantumScale*QuantumScale*mean_error/area;
+  area=PerceptibleReciprocal(area);
+  image->error.mean_error_per_pixel=area*distortion[CompositePixelChannel];
+  image->error.normalized_mean_error=area*QuantumScale*QuantumScale*mean_error;
   image->error.normalized_maximum_error=QuantumScale*maximum_error;
   return(status);
 }
@@ -1555,8 +1556,8 @@ static MagickBooleanType GetStructuralSimilarityDistortion(const Image *image,
            (x_pixel_sigmas_squared+y_pixel_sigmas_squared+c2));
         channel_distortion[i]+=ssim;
         channel_distortion[CompositePixelChannel]+=ssim;
-        area++;
       }
+      area++;
       p+=GetPixelChannels(image);
       q+=GetPixelChannels(reconstruct_image);
     }

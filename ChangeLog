@@ -1,3 +1,37 @@
+2021-03-06  7.0.11-3  <quetzlzacatenango@image...>
+  * Release ImageMagick version 7.0.11-3 GIT revision 18521:10079791f:20210306
+
+2021-03-02  7.0.11-3  <quetzlzacatenango@image...>
+  * Eliminate multiple division by zero exceptions (reference
+    https://github.com/ImageMagick/ImageMagick/issues/3339 and others).
+  * Use -define filename:literal=true to bypass interpretting embedded
+    formatting characters and instead use the filename literally.
+
+2021-02-27  7.0.11-2  <quetzlzacatenango@image...>
+  * Release ImageMagick version 7.0.11-2 GIT revision 18492:c524ed20c:20210227
+
+2021-02-25  7.0.11-2  Dirk Lemstra <dirk@lem.....org>
+  * decode HEIC images in sRGB instead of YCbCr.
+
+2021-02-25  7.0.11-2  <happyerc...@...>
+  * Division by zero error is possible if crafty file sets film-gamma property
+  * Check for overflow in thumbnail coder
+  * Prevent compiler from optimizing out buffer clearing in cipher
+
+2021-02-21  7.0.11-2  <quetzlzacatenango@image...>
+  * Clone properties from image stack.
+  * Set overall image depth statistic in Composite channel.
+
+2021-02-21  7.0.11-1  <quetzlzacatenango@image...>
+  * Clone properties from image stack.
+
+2021-02-21  7.0.11-1  <quetzlzacatenango@image...>
+  * Release ImageMagick version 7.0.11-1 GIT revision 18456:4de21b7b4:20210221
+
+2021-02-15  7.0.11-1  <quetzlzacatenango@image...>
+  * fix EXR crash (reference
+    https://github.com/ImageMagick/ImageMagick/issues/3242).
+
 2021-02-13  7.0.11-0  <quetzlzacatenango@image...>
   * Release ImageMagick version 7.0.11-0 GIT revision 18438:ff3ef50ab:20210213
 

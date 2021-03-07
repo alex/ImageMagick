@@ -553,10 +553,10 @@ static MagickBooleanType EncodeImage(const ImageInfo *image_info,Image *image,
   while (bits >= 8) \
   { \
     /*  \
-      Add a character to current packet. \
+      Add a character to current packet.  Maximum packet size is 255.
     */ \
     packet[length++]=(unsigned char) (datum & 0xff); \
-    if (length >= 254) \
+    if (length == 255) \
       { \
         (void) WriteBlobByte(image,(unsigned char) length); \
         (void) WriteBlob(image,length,packet); \
@@ -785,10 +785,10 @@ static MagickBooleanType EncodeImage(const ImageInfo *image_info,Image *image,
   if (bits > 0)
     {
       /*
-        Add a character to current packet.
+        Add a character to current packet.  Maximum packet size is 255.
       */
       packet[length++]=(unsigned char) (datum & 0xff);
-      if (length >= 254)
+      if (length == 255)
         {
           (void) WriteBlobByte(image,(unsigned char) length);
           (void) WriteBlob(image,length,packet);

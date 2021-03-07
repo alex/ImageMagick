@@ -53,9 +53,9 @@
 */
 #define CIEEpsilon  (216.0/24389.0)
 #define CIEK  (24389.0/27.0)
-#define D65X  0.950456
+#define D65X  0.95047
 #define D65Y  1.0
-#define D65Z  1.088754
+#define D65Z  1.08883
 #define ReferenceEpsilon  (QuantumRange*1.0e-2)
 
 /*
@@ -2117,7 +2117,7 @@ static size_t ValidateImportExportPixels(ImageInfo *image_info,
       length=strlen(reference_map[i])*reference_image->columns*
         reference_image->rows*reference_storage[j].quantum;
       pixels=(unsigned char *) AcquireQuantumMemory(length,sizeof(*pixels));
-      if (pixels == (unsigned char *) NULL ||
+      if ((pixels == (unsigned char *) NULL) ||
           (exception->severity >= ErrorException))
         {
           (void) FormatLocaleFile(stdout,"... fail @ %s/%s/%lu.\n",

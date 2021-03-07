@@ -40,6 +40,7 @@
   Include declarations.
 */
 #include "MagickCore/studio.h"
+#include "MagickCore/artifact.h"
 #include "MagickCore/attribute.h"
 #include "MagickCore/property.h"
 #include "MagickCore/cache.h"
@@ -59,6 +60,7 @@
 #include "MagickCore/memory_.h"
 #include "MagickCore/monitor.h"
 #include "MagickCore/monitor-private.h"
+#include "MagickCore/option.h"
 #include "MagickCore/pixel-accessor.h"
 #include "MagickCore/pixel-private.h"
 #include "MagickCore/quantize.h"
@@ -270,7 +272,8 @@ static void ConvertRGBToLMS(const double red,const double green,
 }
 
 static void ConvertRGBToLuv(const double red,const double green,
-  const double blue,double *L,double *u,double *v)
+  const double blue,const IlluminantType illuminant,double *L,double *u,
+  double *v)
 {
   double
     X,
@@ -278,7 +281,7 @@ static void ConvertRGBToLuv(const double red,const double green,
     Z;
 
   ConvertRGBToXYZ(red,green,blue,&X,&Y,&Z);
-  ConvertXYZToLuv(X,Y,Z,L,u,v);
+  ConvertXYZToLuv(X,Y,Z,illuminant,L,u,v);
 }
 
 static void ConvertRGBToxyY(const double red,const double green,
@@ -329,11 +332,11 @@ static void inline ConvertXYZToJzazbz(const double X,const double Y,
   L=0.41478972*Xp+0.579999*Yp+0.0146480*Zp;
   M=(-0.2015100)*Xp+1.120649*Yp+0.0531008*Zp;
   S=(-0.0166008)*Xp+0.264800*Yp+0.6684799*Zp;
-  gamma=pow(L/white_luminance,Jzazbz_n);
+  gamma=pow(L*PerceptibleReciprocal(white_luminance),Jzazbz_n);
   Lp=pow((Jzazbz_c1+Jzazbz_c2*gamma)/(1.0+Jzazbz_c3*gamma),Jzazbz_p);
-  gamma=pow(M/white_luminance,Jzazbz_n);
+  gamma=pow(M*PerceptibleReciprocal(white_luminance),Jzazbz_n);
   Mp=pow((Jzazbz_c1+Jzazbz_c2*gamma)/(1.0+Jzazbz_c3*gamma),Jzazbz_p);
-  gamma=pow(S/white_luminance,Jzazbz_n);
+  gamma=pow(S*PerceptibleReciprocal(white_luminance),Jzazbz_n);
   Sp=pow((Jzazbz_c1+Jzazbz_c2*gamma)/(1.0+Jzazbz_c3*gamma),Jzazbz_p);
   Iz=0.5*Lp+0.5*Mp;
   *az=3.52400*Lp-4.066708*Mp+0.542708*Sp+0.5;
@@ -455,6 +458,12 @@ static MagickBooleanType sRGBTransformImage(Image *image,
   CacheView
     *image_view;
 
+  const char
+    *artifact;
+
+  IlluminantType
+    illuminant = D65Illuminant;
+
   MagickBooleanType
     status;
 
@@ -482,6 +491,14 @@ static MagickBooleanType sRGBTransformImage(Image *image,
   assert(colorspace != sRGBColorspace);
   assert(colorspace != TransparentColorspace);
   assert(colorspace != UndefinedColorspace);
+  artifact=GetImageArtifact(image,"color:illuminant");
+  if (artifact != (const char *) NULL)
+    {
+      illuminant=(IlluminantType) ParseCommandOption(MagickIlluminantOptions,
+        MagickFalse,artifact);
+      if ((ssize_t) illuminant < 0)
+        illuminant=UndefinedIlluminant;
+    }
   status=MagickTrue;
   progress=0;
   switch (colorspace)
@@ -808,18 +825,18 @@ static MagickBooleanType sRGBTransformImage(Image *image,
             }
             case LabColorspace:
             {
-              ConvertRGBToLab(red,green,blue,&X,&Y,&Z);
+              ConvertRGBToLab(red,green,blue,illuminant,&X,&Y,&Z);
               break;
             }
             case LCHColorspace:
             case LCHabColorspace:
             {
-              ConvertRGBToLCHab(red,green,blue,&X,&Y,&Z);
+              ConvertRGBToLCHab(red,green,blue,illuminant,&X,&Y,&Z);
               break;
             }
             case LCHuvColorspace:
             {
-              ConvertRGBToLCHuv(red,green,blue,&X,&Y,&Z);
+              ConvertRGBToLCHuv(red,green,blue,illuminant,&X,&Y,&Z);
               break;
             }
             case LMSColorspace:
@@ -829,7 +846,7 @@ static MagickBooleanType sRGBTransformImage(Image *image,
             }
             case LuvColorspace:
             {
-              ConvertRGBToLuv(red,green,blue,&X,&Y,&Z);
+              ConvertRGBToLuv(red,green,blue,illuminant,&X,&Y,&Z);
               break;
             }
             case ProPhotoColorspace:
@@ -940,15 +957,15 @@ static MagickBooleanType sRGBTransformImage(Image *image,
       if (logmap == (Quantum *) NULL)
         ThrowBinaryException(ResourceLimitError,"MemoryAllocationFailed",
           image->filename);
-      black=pow(10.0,(reference_black-reference_white)*(gamma/density)*0.002/
-        film_gamma);
+      black=pow(10.0,(reference_black-reference_white)*(gamma/density)*0.002*
+        PerceptibleReciprocal(film_gamma));
 #if defined(MAGICKCORE_OPENMP_SUPPORT)
       #pragma omp parallel for schedule(static)
 #endif
       for (i=0; i <= (ssize_t) MaxMap; i++)
         logmap[i]=ScaleMapToQuantum((double) (MaxMap*(reference_white+
-          log10(black+(1.0*i/MaxMap)*(1.0-black))/((gamma/density)*0.002/
-          film_gamma))/1024.0));
+          log10(black+(1.0*i/MaxMap)*(1.0-black))/((gamma/density)*0.002*
+          PerceptibleReciprocal(film_gamma)))/1024.0));
       image_view=AcquireAuthenticCacheView(image,exception);
 #if defined(MAGICKCORE_OPENMP_SUPPORT)
       #pragma omp parallel for schedule(static) shared(status) \
@@ -1682,14 +1699,15 @@ static inline void ConvertLMSToRGB(const double L,const double M,
 }
 
 static inline void ConvertLuvToRGB(const double L,const double u,
-  const double v,double *red,double *green,double *blue)
+  const double v,const IlluminantType illuminant,double *red,double *green,
+  double *blue)
 {
   double
     X,
     Y,
     Z;
 
-  ConvertLuvToXYZ(100.0*L,354.0*u-134.0,262.0*v-140.0,&X,&Y,&Z);
+  ConvertLuvToXYZ(100.0*L,354.0*u-134.0,262.0*v-140.0,illuminant,&X,&Y,&Z);
   ConvertXYZToRGB(X,Y,Z,red,green,blue);
 }
 
@@ -1703,14 +1721,15 @@ static inline ssize_t RoundToYCC(const double value)
 }
 
 static inline void ConvertLabToRGB(const double L,const double a,
-  const double b,double *red,double *green,double *blue)
+  const double b,const IlluminantType illuminant,double *red,double *green,
+  double *blue)
 {
   double
     X,
     Y,
     Z;
 
-  ConvertLabToXYZ(100.0*L,255.0*(a-0.5),255.0*(b-0.5),&X,&Y,&Z);
+  ConvertLabToXYZ(100.0*L,255.0*(a-0.5),255.0*(b-0.5),illuminant,&X,&Y,&Z);
   ConvertXYZToRGB(X,Y,Z,red,green,blue);
 }
 
@@ -2025,6 +2044,12 @@ static MagickBooleanType TransformsRGBImage(Image *image,
   CacheView
     *image_view;
 
+  const char
+    *artifact;
+
+  IlluminantType
+    illuminant = D65Illuminant;
+
   MagickBooleanType
     status;
 
@@ -2046,6 +2071,14 @@ static MagickBooleanType TransformsRGBImage(Image *image,
   assert(image->signature == MagickCoreSignature);
   if (image->debug != MagickFalse)
     (void) LogMagickEvent(TraceEvent,GetMagickModule(),"%s",image->filename);
+  artifact=GetImageArtifact(image,"color:illuminant");
+  if (artifact != (const char *) NULL)
+    {
+      illuminant=(IlluminantType) ParseCommandOption(MagickIlluminantOptions,
+        MagickFalse,artifact);
+      if ((ssize_t) illuminant < 0)
+        illuminant=UndefinedIlluminant;
+    }
   status=MagickTrue;
   progress=0;
   switch (image->colorspace)
@@ -2375,18 +2408,18 @@ static MagickBooleanType TransformsRGBImage(Image *image,
             }
             case LabColorspace:
             {
-              ConvertLabToRGB(X,Y,Z,&red,&green,&blue);
+              ConvertLabToRGB(X,Y,Z,illuminant,&red,&green,&blue);
               break;
             }
             case LCHColorspace:
             case LCHabColorspace:
             {
-              ConvertLCHabToRGB(X,Y,Z,&red,&green,&blue);
+              ConvertLCHabToRGB(X,Y,Z,illuminant,&red,&green,&blue);
               break;
             }
             case LCHuvColorspace:
             {
-              ConvertLCHuvToRGB(X,Y,Z,&red,&green,&blue);
+              ConvertLCHuvToRGB(X,Y,Z,illuminant,&red,&green,&blue);
               break;
             }
             case LMSColorspace:
@@ -2396,7 +2429,7 @@ static MagickBooleanType TransformsRGBImage(Image *image,
             }
             case LuvColorspace:
             {
-              ConvertLuvToRGB(X,Y,Z,&red,&green,&blue);
+              ConvertLuvToRGB(X,Y,Z,illuminant,&red,&green,&blue);
               break;
             }
             case ProPhotoColorspace:
@@ -2502,14 +2535,14 @@ static MagickBooleanType TransformsRGBImage(Image *image,
       if (logmap == (Quantum *) NULL)
         ThrowBinaryException(ResourceLimitError,"MemoryAllocationFailed",
           image->filename);
-      black=pow(10.0,(reference_black-reference_white)*(gamma/density)*0.002/
-        film_gamma);
+      black=pow(10.0,(reference_black-reference_white)*(gamma/density)*0.002*
+        PerceptibleReciprocal(film_gamma));
       for (i=0; i <= (ssize_t) (reference_black*MaxMap/1024.0); i++)
         logmap[i]=(Quantum) 0;
       for ( ; i < (ssize_t) (reference_white*MaxMap/1024.0); i++)
         logmap[i]=ClampToQuantum(QuantumRange/(1.0-black)*
-          (pow(10.0,(1024.0*i/MaxMap-reference_white)*(gamma/density)*0.002/
-          film_gamma)-black));
+          (pow(10.0,(1024.0*i/MaxMap-reference_white)*(gamma/density)*0.002*
+          PerceptibleReciprocal(film_gamma))-black));
       for ( ; i <= (ssize_t) MaxMap; i++)
         logmap[i]=QuantumRange;
       if (image->storage_class == PseudoClass)

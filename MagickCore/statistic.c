@@ -1032,8 +1032,8 @@ static Quantum ApplyFunction(Quantum pixel,const MagickFunction function,
       center=(number_parameters >= 2) ? parameters[1] : 0.5;
       range=(number_parameters >= 3) ? parameters[2] : 1.0;
       bias=(number_parameters >= 4) ? parameters[3] : 0.5;
-      result=2.0/width*(QuantumScale*pixel-center);
-      if ( result <= -1.0 )
+      result=2.0*PerceptibleReciprocal(width)*(QuantumScale*pixel-center);
+      if (result <= -1.0)
         result=bias-range/2.0;
       else
         if (result >= 1.0)
@@ -2161,6 +2161,10 @@ MagickExport ChannelStatistics *GetImageStatistics(const Image *image,
             if (status != MagickFalse)
               {
                 channel_statistics[channel].depth++;
+                if (channel_statistics[channel].depth >
+                    channel_statistics[CompositePixelChannel].depth)
+                  channel_statistics[CompositePixelChannel].depth=
+                    channel_statistics[channel].depth;
                 i--;
                 continue;
               }
@@ -3043,6 +3047,12 @@ MagickExport Image *StatisticImage(const Image *image,const StatisticType type,
         }
         switch (type)
         {
+          case ContrastStatistic:
+          {
+            pixel=ClampToQuantum(MagickAbsoluteValue((maximum-minimum)*
+              PerceptibleReciprocal(maximum+minimum)));
+            break;
+          }
           case GradientStatistic:
           {
             pixel=ClampToQuantum(MagickAbsoluteValue(maximum-minimum));
