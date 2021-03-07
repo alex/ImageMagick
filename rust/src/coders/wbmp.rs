@@ -60,11 +60,11 @@ fn read_wbmp_image(
                 byte = blob.read_u8(exception_info)?;
                 bits_remaining = 8;
             }
-            let pixel_val = if byte & (0x1 << (bits_remaining - 1)) == 0 {
-                0.
+            let pixel_val = crate::Quantum::from(if byte & (0x1 << (bits_remaining - 1)) == 0 {
+                0
             } else {
-                1.
-            };
+                1
+            });
             q.set_pixel_index(x, pixel_val);
             bits_remaining -= 1;
         }
@@ -116,7 +116,7 @@ fn write_wbmp_image(
         let mut bit = 0;
         let mut byte = 0;
         for x in 0..columns {
-            if p.get_pixel_luma(x) >= (crate::QUANTUM_RANGE / 2.).into() {
+            if p.get_pixel_luma(x) >= (crate::QUANTUM_RANGE / 2).into() {
                 byte |= 0x1 << (7 - bit);
             }
             bit += 1;

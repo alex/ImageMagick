@@ -372,19 +372,39 @@ impl ExceptionInfo {
     }
 }
 
-type Quantum = bindings::Quantum;
+pub struct Quantum(bindings::Quantum);
+
+impl From<u8> for Quantum {
+    fn from(v: u8) -> Quantum {
+        Quantum(v as bindings::Quantum)
+    }
+}
+
+impl Into<bindings::MagickRealType> for Quantum {
+    fn into(self) -> bindings::MagickRealType {
+        self.0.into()
+    }
+}
+
+impl std::ops::Div<u8> for Quantum {
+    type Output = Self;
+
+    fn div(self, rhs: u8) -> Self::Output {
+        Quantum(self.0 / (rhs as bindings::Quantum))
+    }
+}
 
 struct PixelInfo(bindings::PixelInfo);
 
 impl PixelInfo {
     fn set_alpha(&mut self, value: Quantum) {
-        self.0.alpha = value.into();
+        self.0.alpha = value.0.into();
     }
 }
 
 struct AuthenticPixels<'a, 'b> {
     canvas: &'b mut CanvasWriter<'a>,
-    quantums: *mut Quantum,
+    quantums: *mut bindings::Quantum,
     quantums_length: usize,
 }
 
@@ -393,7 +413,7 @@ impl AuthenticPixels<'_, '_> {
         let pos = self.canvas.num_channels().checked_mul(idx).unwrap();
         assert!(pos < self.quantums_length);
         unsafe {
-            bindings::rust_SetPixelIndex(self.canvas.0, index, self.quantums.add(pos));
+            bindings::rust_SetPixelIndex(self.canvas.0, index.0, self.quantums.add(pos));
         }
     }
 
@@ -408,7 +428,7 @@ impl AuthenticPixels<'_, '_> {
 
 struct VirtualPixels<'a, 'b> {
     canvas: &'b mut CanvasReader<'a>,
-    quantums: *const Quantum,
+    quantums: *const bindings::Quantum,
     quantums_length: usize,
 }
 
@@ -420,8 +440,8 @@ impl VirtualPixels<'_, '_> {
     }
 }
 
-pub const TRANSPARENT_ALPHA: Quantum = bindings::TransparentAlpha;
-pub const QUANTUM_RANGE: Quantum = bindings::QuantumRange as Quantum;
+pub const TRANSPARENT_ALPHA: Quantum = Quantum(bindings::TransparentAlpha);
+pub const QUANTUM_RANGE: Quantum = Quantum(bindings::QuantumRange as bindings::Quantum);
 
 #[repr(u32)]
 enum PixelTrait {
