@@ -16,3 +16,5 @@ pub(crate) use bindings::*;
 pub const MagickImageCoderSignature: libc::size_t = BindingsMagickImageCoderSignature;
 #[allow(non_upper_case_globals)]
 pub const TransparentAlpha: bindings::Quantum = BindingsTransparentAlpha;
+#[allow(non_upper_case_globals)]
+pub const QuantumRange: bindings::Quantum = BindingsQuantumRange;
